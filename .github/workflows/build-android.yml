@@ -88,17 +88,17 @@ jobs:
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
-      with:
-        packages: |
-          platforms;android-35
-          build-tools;35.0.0
-          ndk;${{ env.NDK_VERSION }}
-          cmake;3.22.1
-          platform-tools
 
-    - name: Accept Android SDK licenses
+    - name: Install Android SDK packages
       run: |
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        echo "Installing SDK packages..."
+        yes | sdkmanager --install \
+          "platforms;android-35" \
+          "build-tools;35.0.0" \
+          "ndk;${{ env.NDK_VERSION }}" \
+          "cmake;3.22.1" \
+          "platform-tools" 2>&1 | tail -30
+        echo "Done — SDK packages installed"
 
     - name: Verify NDK
       run: |
