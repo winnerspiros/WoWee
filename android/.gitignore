@@ -1,0 +1,25 @@
+# Android / Gradle build artifacts
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Gradle wrapper generated files (if not committed)
+gradlew
+gradlew.bat
+
+# Local properties
+local.properties
+
+# IDE
+.idea/
+*.iml
+.externalNativeBuild/
+.cxx/
+
+# Keystore files
+*.jks
+*.keystore
