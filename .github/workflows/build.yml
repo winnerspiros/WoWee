@@ -4,8 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches: [ master ]
+    paths-ignore:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
