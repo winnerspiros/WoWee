@@ -33,12 +33,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Cache apt packages
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: /var/cache/apt/archives/*.deb
         key: apt-${{ matrix.arch }}-${{ hashFiles('.github/workflows/build.yml') }}
@@ -120,7 +120,7 @@ jobs:
       run: cd build && cpack -G DEB
 
     - name: Upload DEB
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wowee-linux-${{ matrix.arch }}-deb
         path: build/wowee-*.deb
@@ -138,7 +138,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: true
 
@@ -397,7 +397,7 @@ jobs:
           --verbose=2 Wowee.dmg
 
     - name: Upload DMG
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wowee-macos-${{ matrix.arch }}-dmg
         path: Wowee.dmg
@@ -408,7 +408,7 @@ jobs:
     runs-on: windows-11-arm
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: true
 
@@ -512,7 +512,7 @@ jobs:
       run: cd build && cpack -G ZIP
 
     - name: Upload ZIP
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wowee-windows-arm64-zip
         path: build/wowee-*.zip
@@ -523,7 +523,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: true
 
@@ -606,7 +606,7 @@ jobs:
       run: cd build && cpack -G NSIS
 
     - name: Upload installer
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wowee-windows-x86-64-installer
         path: build/wowee-*.exe

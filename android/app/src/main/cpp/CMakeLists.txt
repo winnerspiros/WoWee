@@ -6,7 +6,7 @@
 #   - No Unicorn Engine (x86 emulation — won't run on ARM)
 #   - No AMD FSR2/FSR3 (desktop GPU features, not available on Android NDK)
 #   - No X11 / desktop-specific dependencies
-#   - SDL2 linked via Android prefab (org.libsdl.app:SDL2)
+#   - SDL2 built from source (extern/SDL, downloaded in CI)
 
 cmake_minimum_required(VERSION 3.22.1)
 project(wowee_android VERSION 1.0.0 LANGUAGES C CXX)
@@ -32,8 +32,26 @@ add_compile_definitions(
     $<$<CONFIG:Debug>:WOWEE_DEBUG>
 )
 
-# --- Find SDL2 via Android prefab ---
-find_package(SDL2 REQUIRED CONFIG)
+# --- Build SDL2 from source (downloaded in CI to extern/SDL) ---
+set(SDL_DIR ${WOWEE_ROOT}/extern/SDL)
+if(NOT EXISTS ${SDL_DIR})
+    message(FATAL_ERROR "SDL2 not found at ${SDL_DIR}. Run CI workflow or download SDL2 release tarball.")
+endif()
+
+# SDL2 static library for Android
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_TEST OFF CACHE BOOL "" FORCE)
+set(SDL_ATOMIC ON CACHE BOOL "" FORCE)
+
+# Android-specific: disable features we don't need
+set(SDL_HAPTIC OFF CACHE BOOL "" FORCE)
+set(SDL_POWER OFF CACHE BOOL "" FORCE)
+set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
+set(SDL_JOYSTICK OFF CACHE BOOL "" FORCE)
+set(SDL_HIDAPI OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(${SDL_DIR} ${CMAKE_BINARY_DIR}/SDL2)
 
 # --- Find Vulkan (Android NDK provides Vulkan headers + loader) ---
 find_package(Vulkan REQUIRED)
@@ -128,7 +146,7 @@ add_library(imgui STATIC
     ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
 )
 target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
-target_link_libraries(imgui PUBLIC SDL2::SDL2 Vulkan::Vulkan ${CMAKE_DL_LIBS})
+target_link_libraries(imgui PUBLIC SDL2::SDL2-static Vulkan::Vulkan ${CMAKE_DL_LIBS})
 
 # --- WoWee Core Sources ---
 # Same source files as the root CMakeLists, minus platform-specific exclusions.
@@ -570,7 +588,7 @@ endif()
 
 # Link libraries
 target_link_libraries(wowee PRIVATE
-    SDL2::SDL2
+    SDL2::SDL2-static
     Vulkan::Vulkan
     lua51
     imgui
