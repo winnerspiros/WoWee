@@ -56,21 +56,24 @@ add_subdirectory(${SDL_DIR} ${CMAKE_BINARY_DIR}/SDL2)
 # --- Find Vulkan (Android NDK provides Vulkan headers + loader) ---
 find_package(Vulkan REQUIRED)
 
-# --- Find OpenSSL (Android NDK provides this via prefab or vcpkg) ---
-# Prefer the NDK's bundled OpenSSL via prefab
+# --- Find OpenSSL (try NDK BoringSSL first, then stub if missing) ---
 find_package(OpenSSL QUIET)
 if(NOT OPENSSL_FOUND)
-    # Fallback: find OpenSSL in the NDK sysroot or vcpkg
     find_library(SSL_LIB ssl)
     find_library(CRYPTO_LIB crypto)
-    find_path(OPENSSL_INCLUDE_DIR openssl/ssl.h)
+    # NDK r27+ BoringSSL headers live in the toolchain sysroot
+    find_path(OPENSSL_INCLUDE_DIR openssl/ssl.h
+        PATHS
+            ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include
+        NO_DEFAULT_PATH)
     if(SSL_LIB AND CRYPTO_LIB AND OPENSSL_INCLUDE_DIR)
         set(OPENSSL_FOUND TRUE)
         set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
         set(OPENSSL_CRYPTO_LIBRARY ${CRYPTO_LIB})
-        set(OPENSSL_INCLUDE_DIR ${OPENSSL_INCLUDE_DIR})
+        message(STATUS "OpenSSL (BoringSSL) found in NDK: ${OPENSSL_INCLUDE_DIR}")
     else()
-        message(FATAL_ERROR "OpenSSL not found. Required for WoW auth (SRP6).")
+        message(WARNING "OpenSSL not found — building without auth (SRP6 stubbed)")
+        add_compile_definitions(WOWEE_NO_OPENSSL=1)
     endif()
 endif()
 
@@ -600,10 +603,10 @@ target_link_libraries(wowee PRIVATE
     log
 )
 
-# Link OpenSSL
+# Link OpenSSL (optional on Android — stubbed if not found)
 if(OPENSSL_SSL_LIBRARY AND OPENSSL_CRYPTO_LIBRARY)
     target_link_libraries(wowee PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-else()
+elseif(NOT WOWEE_ANDROID)
     target_link_libraries(wowee PRIVATE ssl crypto)
 endif()
 
