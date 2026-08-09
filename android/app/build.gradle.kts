@@ -29,16 +29,7 @@ android {
             }
         }
 
-        ndk {
-            abiFilters("arm64-v8a")
         }
-    }
-
-    signingConfigs {
-        create("release") {
-            // CI signs with its own keystore via environment variables
-        }
-    }
 
     buildTypes {
         release {
