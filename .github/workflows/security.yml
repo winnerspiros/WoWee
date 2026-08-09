@@ -3,8 +3,14 @@ name: Security
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
   pull_request:
     branches: [master]
+    paths-ignore:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
   workflow_dispatch:
 
 env:
