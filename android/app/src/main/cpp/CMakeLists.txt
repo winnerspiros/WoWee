@@ -71,8 +71,10 @@ if(NOT OPENSSL_FOUND)
         set(OPENSSL_CRYPTO_LIBRARY ${CRYPTO_LIB})
         message(STATUS "OpenSSL (BoringSSL) found in NDK: ${OPENSSL_INCLUDE_DIR}")
     else()
-        message(WARNING "OpenSSL not found — building without auth (SRP6 stubbed)")
+        # NDK r27 doesn't ship BoringSSL headers. Stub them for now.
+        message(WARNING "OpenSSL not found in NDK — auth/SRP stubbed")
         add_compile_definitions(WOWEE_NO_OPENSSL=1)
+        set(WOWEE_OPENSSL_MISSING TRUE)
     endif()
 endif()
 
@@ -195,11 +197,15 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/auth/auth_packets.cpp
     ${WOWEE_SRC}/auth/pin_auth.cpp
     ${WOWEE_SRC}/auth/integrity.cpp
-    ${WOWEE_SRC}/auth/srp.cpp
-    ${WOWEE_SRC}/auth/big_num.cpp
-    ${WOWEE_SRC}/auth/crypto.cpp
     ${WOWEE_SRC}/auth/rc4.cpp
     ${WOWEE_SRC}/auth/vanilla_crypt.cpp
+
+    # OpenSSL-dependent auth (stubbed on Android when BoringSSL missing)
+    if(NOT WOWEE_OPENSSL_MISSING)
+        ${WOWEE_SRC}/auth/srp.cpp
+        ${WOWEE_SRC}/auth/big_num.cpp
+        ${WOWEE_SRC}/auth/crypto.cpp
+    endif()
 
     # Game
     ${WOWEE_SRC}/game/expansion_profile.cpp
@@ -616,10 +622,12 @@ elseif(EXISTS ${GLM_DIR})
     target_include_directories(wowee SYSTEM PRIVATE ${GLM_DIR})
 endif()
 
+# RTTI required — NDK disables it by default
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti")
+
 # Compile options
 target_compile_options(wowee PRIVATE
     -O3
-    -frtti
     -fvisibility=hidden
     -fvisibility-inlines-hidden
     -ffast-math
