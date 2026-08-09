@@ -42,13 +42,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false  // TODO: re-enable after verifying ProGuard rules
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // Debug signing for CI — unsigned APK, any keystore
+            signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             isDebuggable = true

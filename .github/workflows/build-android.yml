@@ -159,7 +159,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: wowee-android-release-${{ github.sha }}
-        path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+        path: android/app/build/outputs/apk/release/app-release.apk
         if-no-files-found: warn
 
     - name: Build summary
@@ -174,13 +174,13 @@ jobs:
         else
           echo "| Debug   | Failed |" >> $GITHUB_STEP_SUMMARY
         fi
-        if [ -f android/app/build/outputs/apk/release/app-release-unsigned.apk ]; then
-          SIZE=$(du -h android/app/build/outputs/apk/release/app-release-unsigned.apk | cut -f1)
+        if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+          SIZE=$(du -h android/app/build/outputs/apk/release/app-release.apk | cut -f1)
           echo "| Release | Built ($SIZE) |" >> $GITHUB_STEP_SUMMARY
         else
           echo "| Release | Failed |" >> $GITHUB_STEP_SUMMARY
         fi
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Note:** Release APK is unsigned. Sign with your keystore before distribution." >> $GITHUB_STEP_SUMMARY
+        echo "**Note:** APK is signed with debug keystore. For distribution, sign with your own release keystore." >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Assets:** The APK does NOT include WoW game data. Assets are downloaded on first launch." >> $GITHUB_STEP_SUMMARY
