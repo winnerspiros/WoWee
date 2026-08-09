@@ -576,9 +576,8 @@ target_include_directories(wowee SYSTEM PRIVATE
     ${VK_BOOTSTRAP_DIR}/src
 )
 
-if(OPENSSL_INCLUDE_DIR)
-    target_include_directories(wowee PRIVATE ${OPENSSL_INCLUDE_DIR})
-endif()
+# OpenSSL: use host system headers (NDK doesn't ship them)
+target_include_directories(wowee PRIVATE /usr/include)
 
 # Link libraries
 target_link_libraries(wowee PRIVATE
@@ -608,16 +607,13 @@ elseif(EXISTS ${GLM_DIR})
     target_include_directories(wowee SYSTEM PRIVATE ${GLM_DIR})
 endif()
 
-# RTTI required — NDK disables it by default
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti")
-
 # Compile options
 target_compile_options(wowee PRIVATE
     -O3
     -fvisibility=hidden
     -fvisibility-inlines-hidden
     -ffast-math
-    -fno-rtti
+    -frtti
     $<$<CONFIG:Debug>:-O0 -g>
 )
 
