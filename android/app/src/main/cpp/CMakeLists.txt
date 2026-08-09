@@ -146,7 +146,7 @@ add_library(imgui STATIC
     ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
 )
 target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
-target_link_libraries(imgui PUBLIC SDL2::SDL2-static Vulkan::Vulkan ${CMAKE_DL_LIBS})
+target_link_libraries(imgui PUBLIC SDL2-static Vulkan::Vulkan ${CMAKE_DL_LIBS})
 
 # --- WoWee Core Sources ---
 # Same source files as the root CMakeLists, minus platform-specific exclusions.
@@ -588,7 +588,7 @@ endif()
 
 # Link libraries
 target_link_libraries(wowee PRIVATE
-    SDL2::SDL2-static
+    SDL2-static
     Vulkan::Vulkan
     lua51
     imgui

@@ -25,6 +25,13 @@
 #include <atomic>
 #include <exception>
 
+// Touch input adapter (virtual joystick + camera look)
+namespace wowee::android {
+    void touchInit(int screenWidth, int screenHeight);
+    bool touchProcessEvent(const SDL_Event& event);
+    bool touchShouldForward(const SDL_Event& event);
+}
+
 // --- Android logging bridge ---
 namespace {
     void androidLogCallback(void*, int /*category*/, SDL_LogPriority priority,
@@ -94,6 +101,30 @@ Java_com_wowee_app_WoWeeActivity_nativeInit(
                                     "Application::initialize() failed");
                 g_running.store(false);
                 return;
+            }
+
+            // --- Android touch input setup ---
+            // Initialize touch→keyboard/mouse adapter using the created window size.
+            // Register as an SDL event filter so touch events are converted before
+            // they reach the regular pollEvents() loop.
+            {
+                auto* win = app.getWindow();
+                if (win && win->getSDLWindow()) {
+                    int w = win->getWidth();
+                    int h = win->getHeight();
+                    wowee::android::touchInit(w, h);
+
+                    SDL_SetEventFilter([](void*, SDL_Event* event) -> int {
+                        if (wowee::android::touchProcessEvent(*event)) {
+                            // Consumed by touch adapter — don't forward to game.
+                            return 0;
+                        }
+                        return 1; // Let event through to normal pollEvents
+                    }, nullptr);
+
+                    __android_log_print(ANDROID_LOG_INFO, "WoWeeNative",
+                                        "Touch input filter registered (%dx%d)", w, h);
+                }
             }
 
             __android_log_print(ANDROID_LOG_INFO, "WoWeeNative",
