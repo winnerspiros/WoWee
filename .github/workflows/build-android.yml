@@ -87,13 +87,13 @@ jobs:
           android-sdk-${{ runner.os }}-
 
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v4
+      uses: android-actions/setup-android@v3
       with:
         packages: |
           platforms;android-35
           build-tools;35.0.0
           ndk;${{ env.NDK_VERSION }}
-          cmake;3.31.6
+          cmake;3.22.1
           platform-tools
 
     - name: Accept Android SDK licenses
