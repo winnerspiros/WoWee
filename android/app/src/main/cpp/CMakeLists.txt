@@ -64,8 +64,7 @@ if(NOT OPENSSL_FOUND)
     # NDK r27+ BoringSSL headers live in the toolchain sysroot
     find_path(OPENSSL_INCLUDE_DIR openssl/ssl.h
         PATHS
-            ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include
-        NO_DEFAULT_PATH)
+            ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include)
     if(SSL_LIB AND CRYPTO_LIB AND OPENSSL_INCLUDE_DIR)
         set(OPENSSL_FOUND TRUE)
         set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
@@ -620,6 +619,7 @@ endif()
 # Compile options
 target_compile_options(wowee PRIVATE
     -O3
+    -frtti
     -fvisibility=hidden
     -fvisibility-inlines-hidden
     -ffast-math
