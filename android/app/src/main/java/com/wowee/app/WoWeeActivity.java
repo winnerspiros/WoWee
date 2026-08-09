@@ -10,14 +10,11 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,42 +22,33 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import org.libsdl.app.SDL;
+import org.libsdl.app.SDLSurface;
 
 import java.io.File;
 
 /**
  * WoWee Native Client — Android Activity.
  *
- * Flow:
- *   1. Check assets → if missing, launch AssetDownloadService
- *   2. Once assets ready: SDL.setupJNI() → SDL.initialize() → SDL.setSurface() → nativeInit()
- *   3. Game loop runs on dedicated native thread; UI thread dispatches SDL events
+ * Uses SDLSurface (from copied SDL2 Java source) for proper SDL lifecycle.
+ * Flow: check assets → download if missing → SDL.setupJNI → SDLSurface → game runs.
  */
-public class WoWeeActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+public class WoWeeActivity extends AppCompatActivity {
 
     private static final String TAG = "WoWeeActivity";
-    private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final String BROADCAST_ASSETS_READY = "com.wowee.app.ASSETS_READY";
     private static final String WOW_DATA_DIR = "Data";
 
-    private enum State { CHECKING, DOWNLOADING, INIT_SDL, RUNNING }
+    private SDLSurface mSDLSurface;
+    private boolean mAssetsReady = false;
 
-    private SurfaceView mSurfaceView;
-    private Surface mSurface;
-    private State mState = State.CHECKING;
-    private boolean mSDLReady = false;
-    private boolean mSurfaceReady = false;
-
-    // Overlay
+    // Download overlay
     private View mDownloadOverlay;
     private ProgressBar mDownloadProgress;
     private TextView mDownloadStatus;
 
-    // Broadcast receiver for asset download completion
     private final BroadcastReceiver mAssetReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Assets ready broadcast received");
             onAssetsReady();
         }
     };
@@ -74,16 +62,13 @@ public class WoWeeActivity extends AppCompatActivity implements SurfaceHolder.Ca
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
+        // Inflate layout with download overlay
         setContentView(R.layout.activity_main);
-
-        mSurfaceView = findViewById(R.id.surface_view);
-        mSurfaceView.getHolder().addCallback(this);
 
         mDownloadOverlay = findViewById(R.id.download_overlay);
         mDownloadProgress = findViewById(R.id.download_progress);
         mDownloadStatus = findViewById(R.id.download_status);
 
-        // Register for asset download complete broadcasts
         registerReceiver(mAssetReceiver, new IntentFilter(BROADCAST_ASSETS_READY),
                 Context.RECEIVER_NOT_EXPORTED);
 
@@ -93,8 +78,6 @@ public class WoWeeActivity extends AppCompatActivity implements SurfaceHolder.Ca
             requestPermissions();
         }
     }
-
-    // --- Permissions ---
 
     private boolean hasRequiredPermissions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -108,7 +91,7 @@ public class WoWeeActivity extends AppCompatActivity implements SurfaceHolder.Ca
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_REQUEST_CODE);
+                    1001);
         }
     }
 
@@ -116,131 +99,88 @@ public class WoWeeActivity extends AppCompatActivity implements SurfaceHolder.Ca
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) checkAssets();
+        if (requestCode == 1001) checkAssets();
     }
 
     // --- Asset management ---
 
     private void checkAssets() {
-        File dataDir = getDataDir();
+        File dataDir = getWowDataDir();
         File manifestFile = new File(dataDir, "manifest.json");
 
         if (manifestFile.exists() && manifestFile.length() > 0) {
             Log.i(TAG, "Assets found at " + dataDir);
-            mState = State.INIT_SDL;
+            mAssetsReady = true;
             initSDL();
         } else {
             Log.i(TAG, "Assets missing, starting download...");
-            mState = State.DOWNLOADING;
             mDownloadOverlay.setVisibility(View.VISIBLE);
-            mSurfaceView.setVisibility(View.GONE);
 
             Intent intent = new Intent(this, AssetDownloadService.class);
             intent.putExtra("data_dir", dataDir.getAbsolutePath());
-            intent.putExtra("external_dir", getExternalDir().getAbsolutePath());
+            intent.putExtra("external_dir", getWowExternalDir().getAbsolutePath());
             startService(intent);
         }
     }
 
     private void onAssetsReady() {
-        mState = State.INIT_SDL;
         runOnUiThread(() -> {
+            mAssetsReady = true;
             mDownloadOverlay.setVisibility(View.GONE);
-            mSurfaceView.setVisibility(View.VISIBLE);
             initSDL();
         });
     }
 
-    private File getDataDir() {
-        File ext = getExternalDir();
-        return new File(ext, WOW_DATA_DIR);
+    private File getWowDataDir() {
+        return new File(getWowExternalDir(), WOW_DATA_DIR);
     }
 
-    private File getExternalDir() {
+    private File getWowExternalDir() {
         File ext = getExternalFilesDir(null);
         return ext != null ? ext : getFilesDir();
     }
 
-    // --- SDL + Native ---
+    // --- SDL2 + Game ---
 
     private void initSDL() {
-        if (mSDLReady) return;
-        if (mState != State.INIT_SDL) return;
+        if (!mAssetsReady) return;
+        if (mSDLSurface != null) return;
 
-        Log.i(TAG, "SDL.setupJNI() + SDL.initialize()");
+        Log.i(TAG, "Initializing SDL2...");
         SDL.setupJNI();
         SDL.initialize();
-        mSDLReady = true;
 
-        // If surface is already ready, set it and init native now
-        if (mSurfaceReady && mSurface != null) {
-            SDL.setSurface(mSurface);
-            startGame();
+        // Set data path env for native code
+        String dataPath = getWowDataDir().getAbsolutePath();
+        String externalPath = getWowExternalDir().getAbsolutePath();
+        SDL.setenv("WOW_DATA_PATH", dataPath);
+        SDL.setenv("WOWEE_EXTERNAL_PATH", externalPath);
+        SDL.setenv("WOWEE_ANDROID", "1");
+        SDL.setenv("HOME", externalPath);
+
+        // Create SDLSurface — SDL handles Surface + lifecycle + events
+        mSDLSurface = new SDLSurface(this);
+        mSDLSurface.setLayoutParams(new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+
+        // Replace download overlay with SDLSurface
+        FrameLayout root = findViewById(R.id.surface_view);
+        if (root != null) {
+            root.addView(mSDLSurface);
+        } else {
+            setContentView(mSDLSurface);
         }
-    }
-
-    private void startGame() {
-        if (mSurface == null || !mSDLReady) return;
-        if (mState == State.RUNNING) return;
-
-        Log.i(TAG, "nativeInit → starting game loop on native thread");
-        String dataPath = getDataDir().getAbsolutePath();
-        String externalPath = getExternalDir().getAbsolutePath();
-
-        mState = State.RUNNING;
-        nativeInit(dataPath, externalPath);
-    }
-
-    // --- SurfaceHolder.Callback ---
-
-    @Override
-    public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        Log.i(TAG, "surfaceCreated");
-        mSurface = holder.getSurface();
-        mSurfaceReady = true;
-
-        if (mSDLReady && mState == State.INIT_SDL) {
-            SDL.setSurface(mSurface);
-            startGame();
-        }
-    }
-
-    @Override
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-        Log.i(TAG, "surfaceChanged " + width + "x" + height);
-        if (mSurface != null) {
-            SDL.onNativeResize(width, height, mSurface);
-        }
-    }
-
-    @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        Log.i(TAG, "surfaceDestroyed");
-        mSurface = null;
-        mSurfaceReady = false;
     }
 
     // --- Lifecycle ---
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        SDL.onNativeResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        SDL.onNativePause();
-    }
-
-    @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestroy");
         unregisterReceiver(mAssetReceiver);
-
-        if (mState == State.RUNNING) {
-            nativeShutdown();
+        if (mSDLSurface != null) {
+            mSDLSurface = null;
         }
         super.onDestroy();
     }
@@ -265,10 +205,7 @@ public class WoWeeActivity extends AppCompatActivity implements SurfaceHolder.Ca
         }
     }
 
-    // --- JNI ---
-
-    private static native void nativeInit(String dataPath, String externalPath);
-    private static native void nativeShutdown();
+    // --- JNI: native methods loaded by SDL ---
 
     static {
         try {

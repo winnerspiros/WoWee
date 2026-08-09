@@ -116,7 +116,14 @@ public class AssetDownloader {
             long totalSize = 0;
             List<BundleInfo> bundleList = new ArrayList<>();
             for (int i = 0; i < bundles.length(); i++) {
-                JSONObject bundle = bundles.getJSONObject(i);
+                JSONObject bundle;
+                try {
+                    bundle = bundles.getJSONObject(i);
+                } catch (org.json.JSONException e) {
+                    Log.e(TAG, "Invalid bundle entry", e);
+                    reportError("Invalid manifest: bad bundle entry");
+                    return;
+                }
                 BundleInfo info = new BundleInfo(
                         bundle.getString("name"),
                         bundle.getString("url"),
@@ -196,7 +203,12 @@ public class AssetDownloader {
             byte[] data = readFully(is);
             is.close();
 
+            try {
             return new JSONObject(new String(data, StandardCharsets.UTF_8));
+        } catch (org.json.JSONException e) {
+            Log.e(TAG, "Invalid manifest JSON", e);
+            return null;
+        }
         } finally {
             conn.disconnect();
         }
