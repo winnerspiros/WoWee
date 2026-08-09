@@ -140,7 +140,8 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
-        ./gradlew assembleDebug --stacktrace 2>&1 | tail -30
+        set -o pipefail
+        ./gradlew assembleDebug --stacktrace 2>&1 | tail -80
         echo "--- Searching for APK ---"
         find . -name '*.apk' -o -name '*.aab' 2>/dev/null | head -20 || echo "No APK/AAB found anywhere"
 
@@ -155,9 +156,10 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
-        ./gradlew assembleRelease --stacktrace 2>&1 | tail -30
-        echo "--- APK output ---"
-        find app/build/outputs/apk -name '*.apk' -exec ls -lh {} \; 2>/dev/null || echo "No APK found"
+        set -o pipefail
+        ./gradlew assembleRelease --stacktrace 2>&1 | tail -80
+        echo "--- Searching for APK ---"
+        find . -name '*.apk' -o -name '*.aab' 2>/dev/null | head -20 || echo "No APK/AAB found anywhere"
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v7
