@@ -6,68 +6,60 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import org.libsdl.app.SDL;
-import org.libsdl.app.SDLSurface;
+import org.libsdl.app.SDLActivity;
 
 import java.io.File;
 
 /**
- * WoWee Native Client — Android Activity.
+ * WoWee Android Activity — extends SDLActivity for proper SDL2 lifecycle.
  *
- * Uses SDLSurface (from copied SDL2 Java source) for proper SDL lifecycle.
- * Flow: check assets → download if missing → SDL.setupJNI → SDLSurface → game runs.
+ * Flow:
+ *   1. onCreate → check assets
+ *   2. If missing → show download overlay, start AssetDownloadService
+ *   3. On assets ready → call super.onCreate() → SDL loads libwowee.so → SDL_main()
  */
-public class WoWeeActivity extends AppCompatActivity {
+public class WoWeeActivity extends SDLActivity {
 
     private static final String TAG = "WoWeeActivity";
     private static final String BROADCAST_ASSETS_READY = "com.wowee.app.ASSETS_READY";
     private static final String WOW_DATA_DIR = "Data";
 
-    private SDLSurface mSDLSurface;
+    private boolean mAssetsChecked = false;
     private boolean mAssetsReady = false;
-
-    // Download overlay
-    private View mDownloadOverlay;
-    private ProgressBar mDownloadProgress;
-    private TextView mDownloadStatus;
 
     private final BroadcastReceiver mAssetReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            onAssetsReady();
+            mAssetsReady = true;
+            if (mDownloadOverlay != null) mDownloadOverlay.setVisibility(View.GONE);
+            initSDL();
         }
     };
 
+    private View mDownloadOverlay;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected String[] getLibraries() {
+        return new String[] { "wowee" };
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (getSupportActionBar() != null) getSupportActionBar().hide();
-
-        // Inflate layout with download overlay
-        setContentView(R.layout.activity_main);
-
+        super.setContentView(R.layout.activity_main);
         mDownloadOverlay = findViewById(R.id.download_overlay);
-        mDownloadProgress = findViewById(R.id.download_progress);
-        mDownloadStatus = findViewById(R.id.download_status);
 
         registerReceiver(mAssetReceiver, new IntentFilter(BROADCAST_ASSETS_READY),
                 Context.RECEIVER_NOT_EXPORTED);
@@ -81,7 +73,8 @@ public class WoWeeActivity extends AppCompatActivity {
 
     private boolean hasRequiredPermissions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            return ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED;
         }
         return true;
@@ -90,31 +83,30 @@ public class WoWeeActivity extends AppCompatActivity {
     private void requestPermissions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1001);
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1001);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1001) checkAssets();
     }
 
-    // --- Asset management ---
-
     private void checkAssets() {
+        if (mAssetsChecked) return;
+        mAssetsChecked = true;
+
         File dataDir = getWowDataDir();
         File manifestFile = new File(dataDir, "manifest.json");
 
         if (manifestFile.exists() && manifestFile.length() > 0) {
-            Log.i(TAG, "Assets found at " + dataDir);
             mAssetsReady = true;
+            if (mDownloadOverlay != null) mDownloadOverlay.setVisibility(View.GONE);
             initSDL();
         } else {
             Log.i(TAG, "Assets missing, starting download...");
-            mDownloadOverlay.setVisibility(View.VISIBLE);
+            if (mDownloadOverlay != null) mDownloadOverlay.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent(this, AssetDownloadService.class);
             intent.putExtra("data_dir", dataDir.getAbsolutePath());
@@ -123,12 +115,30 @@ public class WoWeeActivity extends AppCompatActivity {
         }
     }
 
-    private void onAssetsReady() {
-        runOnUiThread(() -> {
-            mAssetsReady = true;
-            mDownloadOverlay.setVisibility(View.GONE);
-            initSDL();
-        });
+    private void initSDL() {
+        if (!mAssetsReady) return;
+        Log.i(TAG, "Starting SDL...");
+
+        // Set env vars for native code before SDL_main is called
+        String dataPath = getWowDataDir().getAbsolutePath();
+        String externalPath = getWowExternalDir().getAbsolutePath();
+        try {
+            java.lang.reflect.Field field = Class.forName("org.libsdl.app.SDLActivity")
+                    .getDeclaredField("mEnvVars");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, String> env = (java.util.Map<String, String>) field.get(this);
+            if (env != null) {
+                env.put("WOW_DATA_PATH", dataPath);
+                env.put("WOWEE_EXTERNAL_PATH", externalPath);
+                env.put("WOWEE_ANDROID", "1");
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Couldn't set env vars: " + e.getMessage());
+        }
+
+        // Call super.onCreate() which initializes SDL → loads libraries → calls SDL_main()
+        super.onCreate(null);
     }
 
     private File getWowDataDir() {
@@ -140,78 +150,9 @@ public class WoWeeActivity extends AppCompatActivity {
         return ext != null ? ext : getFilesDir();
     }
 
-    // --- SDL2 + Game ---
-
-    private void initSDL() {
-        if (!mAssetsReady) return;
-        if (mSDLSurface != null) return;
-
-        Log.i(TAG, "Initializing SDL2...");
-        SDL.setupJNI();
-        SDL.initialize();
-
-        // Set data path env for native code
-        String dataPath = getWowDataDir().getAbsolutePath();
-        String externalPath = getWowExternalDir().getAbsolutePath();
-        SDL.setenv("WOW_DATA_PATH", dataPath);
-        SDL.setenv("WOWEE_EXTERNAL_PATH", externalPath);
-        SDL.setenv("WOWEE_ANDROID", "1");
-        SDL.setenv("HOME", externalPath);
-
-        // Create SDLSurface — SDL handles Surface + lifecycle + events
-        mSDLSurface = new SDLSurface(this);
-        mSDLSurface.setLayoutParams(new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT));
-
-        // Replace download overlay with SDLSurface
-        FrameLayout root = findViewById(R.id.surface_view);
-        if (root != null) {
-            root.addView(mSDLSurface);
-        } else {
-            setContentView(mSDLSurface);
-        }
-    }
-
-    // --- Lifecycle ---
-
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "onDestroy");
-        unregisterReceiver(mAssetReceiver);
-        if (mSDLSurface != null) {
-            mSDLSurface = null;
-        }
+        try { unregisterReceiver(mAssetReceiver); } catch (Exception ignored) {}
         super.onDestroy();
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN |
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            );
-        }
-    }
-
-    // --- JNI: native methods loaded by SDL ---
-
-    static {
-        try {
-            System.loadLibrary("wowee");
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "Failed to load libwowee.so: " + e.getMessage());
-        }
     }
 }

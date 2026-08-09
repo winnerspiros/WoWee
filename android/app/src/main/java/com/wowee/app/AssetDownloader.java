@@ -325,7 +325,11 @@ public class AssetDownloader {
     private void writeLocalManifest(JSONObject manifest) {
         File manifestFile = new File(mDataDir, "manifest.json");
         try (FileOutputStream fos = new FileOutputStream(manifestFile)) {
-            fos.write(manifest.toString(2).getBytes(StandardCharsets.UTF_8));
+            try {
+                fos.write(manifest.toString(2).getBytes(StandardCharsets.UTF_8));
+            } catch (org.json.JSONException e) {
+                Log.e(TAG, "Failed to serialize manifest", e);
+            }
         } catch (IOException e) {
             Log.e(TAG, "Failed to write local manifest", e);
         }
