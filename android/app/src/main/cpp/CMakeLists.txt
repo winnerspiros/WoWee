@@ -56,31 +56,16 @@ add_subdirectory(${SDL_DIR} ${CMAKE_BINARY_DIR}/SDL2)
 # --- Find Vulkan (Android NDK provides Vulkan headers + loader) ---
 find_package(Vulkan REQUIRED)
 
-# --- Find OpenSSL for Android ---
-# NDK r27 doesn't ship BoringSSL headers, but the build host has them (libssl-dev).
-# Headers are arch-independent — safe to use host system headers for cross-compile.
-find_package(OpenSSL QUIET)
+# --- OpenSSL for Android ---
+# NDK doesn't ship OpenSSL headers. Use host system headers (libssl-dev).
+# Architecture-independent C headers — safe for cross-compile.
 if(NOT OPENSSL_FOUND)
     find_library(SSL_LIB ssl)
     find_library(CRYPTO_LIB crypto)
-    find_path(OPENSSL_INCLUDE_DIR openssl/ssl.h
-        PATHS /usr/include /usr/local/include
-        NO_CMAKE_FIND_ROOT_PATH
-        NO_DEFAULT_PATH)
-    if(NOT OPENSSL_INCLUDE_DIR)
-        # Fallback: hardcode the host system path
-        if(EXISTS /usr/include/openssl/ssl.h)
-            set(OPENSSL_INCLUDE_DIR /usr/include)
-        endif()
-    endif()
-    if(SSL_LIB AND CRYPTO_LIB AND OPENSSL_INCLUDE_DIR)
-        set(OPENSSL_FOUND TRUE)
-        set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
-        set(OPENSSL_CRYPTO_LIBRARY ${CRYPTO_LIB})
-        message(STATUS "OpenSSL: headers from ${OPENSSL_INCLUDE_DIR}, libs from NDK")
-    else()
-        message(FATAL_ERROR "OpenSSL not found — install libssl-dev on build host")
-    endif()
+    set(OPENSSL_INCLUDE_DIR /usr/include)
+    set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
+    set(OPENSSL_CRYPTO_LIBRARY ${CRYPTO_LIB})
+    message(STATUS "OpenSSL: host headers + NDK libs")
 endif()
 
 # --- GLM (header-only) ---
