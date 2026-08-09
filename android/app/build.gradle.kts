@@ -34,7 +34,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false  // TODO: re-enable after verifying ProGuard rules
-            isShrinkResources = true
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
