@@ -48,8 +48,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Debug signing for CI — unsigned APK, any keystore
-            signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             isDebuggable = true

@@ -140,26 +140,30 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
-        ./gradlew assembleDebug --stacktrace --info 2>&1 | tail -100
+        ./gradlew assembleDebug --stacktrace 2>&1 | tail -30
+        echo "--- APK output ---"
+        find app/build/outputs/apk -name '*.apk' -exec ls -lh {} \; 2>/dev/null || echo "No APK found"
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v7
       with:
         name: wowee-android-debug-${{ github.sha }}
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+        path: android/app/build/outputs/apk/debug/*.apk
         if-no-files-found: warn
 
     - name: Build APK (Release)
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
-        ./gradlew assembleRelease --stacktrace
+        ./gradlew assembleRelease --stacktrace 2>&1 | tail -30
+        echo "--- APK output ---"
+        find app/build/outputs/apk -name '*.apk' -exec ls -lh {} \; 2>/dev/null || echo "No APK found"
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v7
       with:
         name: wowee-android-release-${{ github.sha }}
-        path: android/app/build/outputs/apk/release/app-release.apk
+        path: android/app/build/outputs/apk/release/*.apk
         if-no-files-found: warn
 
     - name: Build summary
@@ -168,14 +172,14 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "| Variant | Status |" >> $GITHUB_STEP_SUMMARY
         echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
-        if [ -f android/app/build/outputs/apk/debug/app-debug.apk ]; then
-          SIZE=$(du -h android/app/build/outputs/apk/debug/app-debug.apk | cut -f1)
+        if ls android/app/build/outputs/apk/debug/*.apk 2>/dev/null; then
+          SIZE=$(du -h android/app/build/outputs/apk/debug/*.apk | head -1 | cut -f1)
           echo "| Debug   | Built ($SIZE) |" >> $GITHUB_STEP_SUMMARY
         else
           echo "| Debug   | Failed |" >> $GITHUB_STEP_SUMMARY
         fi
-        if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
-          SIZE=$(du -h android/app/build/outputs/apk/release/app-release.apk | cut -f1)
+        if ls android/app/build/outputs/apk/release/*.apk 2>/dev/null; then
+          SIZE=$(du -h android/app/build/outputs/apk/release/*.apk | head -1 | cut -f1)
           echo "| Release | Built ($SIZE) |" >> $GITHUB_STEP_SUMMARY
         else
           echo "| Release | Failed |" >> $GITHUB_STEP_SUMMARY
