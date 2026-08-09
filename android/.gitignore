@@ -18,6 +18,9 @@ local.properties
 .externalNativeBuild/
 .cxx/
 
+# SDL2 Java source — copied from release tarball by CI workflow
+app/src/main/java/org/
+
 # NOTE: gradlew/gradlew.bat is intentionally NOT ignored —
 # the CI workflow generates them with 'gradle wrapper --gradle-version 8.11.1'.
 # Local dev: run 'gradle wrapper' once after cloning.
