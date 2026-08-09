@@ -65,7 +65,14 @@ if(NOT OPENSSL_FOUND)
     find_library(CRYPTO_LIB crypto)
     find_path(OPENSSL_INCLUDE_DIR openssl/ssl.h
         PATHS /usr/include /usr/local/include
-        NO_CMAKE_FIND_ROOT_PATH)
+        NO_CMAKE_FIND_ROOT_PATH
+        NO_DEFAULT_PATH)
+    if(NOT OPENSSL_INCLUDE_DIR)
+        # Fallback: hardcode the host system path
+        if(EXISTS /usr/include/openssl/ssl.h)
+            set(OPENSSL_INCLUDE_DIR /usr/include)
+        endif()
+    endif()
     if(SSL_LIB AND CRYPTO_LIB AND OPENSSL_INCLUDE_DIR)
         set(OPENSSL_FOUND TRUE)
         set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
