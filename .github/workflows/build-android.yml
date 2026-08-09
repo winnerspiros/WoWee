@@ -110,7 +110,7 @@ jobs:
     - name: Install Gradle (for wrapper generation)
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -y -qq gradle
+        sudo apt-get install -y -qq gradle libssl-dev
         gradle --version | head -1
 
     - name: Generate Gradle wrapper

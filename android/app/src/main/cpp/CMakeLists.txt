@@ -56,25 +56,22 @@ add_subdirectory(${SDL_DIR} ${CMAKE_BINARY_DIR}/SDL2)
 # --- Find Vulkan (Android NDK provides Vulkan headers + loader) ---
 find_package(Vulkan REQUIRED)
 
-# --- Find OpenSSL (try NDK BoringSSL first, then stub if missing) ---
+# --- Find OpenSSL for Android ---
+# NDK r27 doesn't ship BoringSSL headers, but the build host has them (libssl-dev).
+# Headers are arch-independent — safe to use host system headers for cross-compile.
 find_package(OpenSSL QUIET)
 if(NOT OPENSSL_FOUND)
     find_library(SSL_LIB ssl)
     find_library(CRYPTO_LIB crypto)
-    # NDK r27+ BoringSSL headers live in the toolchain sysroot
     find_path(OPENSSL_INCLUDE_DIR openssl/ssl.h
-        PATHS
-            ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include)
+        PATHS /usr/include)
     if(SSL_LIB AND CRYPTO_LIB AND OPENSSL_INCLUDE_DIR)
         set(OPENSSL_FOUND TRUE)
         set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
         set(OPENSSL_CRYPTO_LIBRARY ${CRYPTO_LIB})
-        message(STATUS "OpenSSL (BoringSSL) found in NDK: ${OPENSSL_INCLUDE_DIR}")
+        message(STATUS "OpenSSL: headers from ${OPENSSL_INCLUDE_DIR}, libs from NDK")
     else()
-        # NDK r27 doesn't ship BoringSSL headers. Stub them for now.
-        message(WARNING "OpenSSL not found in NDK — auth/SRP stubbed")
-        add_compile_definitions(WOWEE_NO_OPENSSL=1)
-        set(WOWEE_OPENSSL_MISSING TRUE)
+        message(FATAL_ERROR "OpenSSL not found — install libssl-dev on build host")
     endif()
 endif()
 
@@ -197,15 +194,11 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/auth/auth_packets.cpp
     ${WOWEE_SRC}/auth/pin_auth.cpp
     ${WOWEE_SRC}/auth/integrity.cpp
+    ${WOWEE_SRC}/auth/srp.cpp
+    ${WOWEE_SRC}/auth/big_num.cpp
+    ${WOWEE_SRC}/auth/crypto.cpp
     ${WOWEE_SRC}/auth/rc4.cpp
     ${WOWEE_SRC}/auth/vanilla_crypt.cpp
-
-    # OpenSSL-dependent auth (stubbed on Android when BoringSSL missing)
-    if(NOT WOWEE_OPENSSL_MISSING)
-        ${WOWEE_SRC}/auth/srp.cpp
-        ${WOWEE_SRC}/auth/big_num.cpp
-        ${WOWEE_SRC}/auth/crypto.cpp
-    endif()
 
     # Game
     ${WOWEE_SRC}/game/expansion_profile.cpp
@@ -608,10 +601,10 @@ target_link_libraries(wowee PRIVATE
     log
 )
 
-# Link OpenSSL (optional on Android — stubbed if not found)
+# Link OpenSSL
 if(OPENSSL_SSL_LIBRARY AND OPENSSL_CRYPTO_LIBRARY)
     target_link_libraries(wowee PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-elseif(NOT WOWEE_ANDROID)
+else()
     target_link_libraries(wowee PRIVATE ssl crypto)
 endif()
 
