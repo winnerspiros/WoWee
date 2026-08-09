@@ -141,7 +141,7 @@ jobs:
       run: |
         export ANDROID_HOME=$ANDROID_HOME
         set -o pipefail
-        ./gradlew assembleDebug --stacktrace 2>&1 | tail -80
+        ./gradlew assembleDebug --stacktrace 2>&1
         echo "--- Searching for APK ---"
         find . -name '*.apk' -o -name '*.aab' 2>/dev/null | head -20 || echo "No APK/AAB found anywhere"
 
@@ -157,7 +157,7 @@ jobs:
       run: |
         export ANDROID_HOME=$ANDROID_HOME
         set -o pipefail
-        ./gradlew assembleRelease --stacktrace 2>&1 | tail -80
+        ./gradlew assembleRelease --stacktrace 2>&1
         echo "--- Searching for APK ---"
         find . -name '*.apk' -o -name '*.aab' 2>/dev/null | head -20 || echo "No APK/AAB found anywhere"
 
