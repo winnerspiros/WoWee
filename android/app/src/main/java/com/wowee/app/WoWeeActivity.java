@@ -57,7 +57,9 @@ public class WoWeeActivity extends SDLActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
         super.setContentView(R.layout.activity_main);
         mDownloadOverlay = findViewById(R.id.download_overlay);
 
@@ -116,29 +118,9 @@ public class WoWeeActivity extends SDLActivity {
     }
 
     private void initSDL() {
-        if (!mAssetsReady) return;
-        Log.i(TAG, "Starting SDL...");
-
-        // Set env vars for native code before SDL_main is called
-        String dataPath = getWowDataDir().getAbsolutePath();
-        String externalPath = getWowExternalDir().getAbsolutePath();
-        try {
-            java.lang.reflect.Field field = Class.forName("org.libsdl.app.SDLActivity")
-                    .getDeclaredField("mEnvVars");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            java.util.Map<String, String> env = (java.util.Map<String, String>) field.get(this);
-            if (env != null) {
-                env.put("WOW_DATA_PATH", dataPath);
-                env.put("WOWEE_EXTERNAL_PATH", externalPath);
-                env.put("WOWEE_ANDROID", "1");
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Couldn't set env vars: " + e.getMessage());
-        }
-
-        // Call super.onCreate() which initializes SDL → loads libraries → calls SDL_main()
-        super.onCreate(null);
+        // SDL already started by super.onCreate() — env vars set before it.
+        // This is called when assets are confirmed ready to hide the overlay.
+        if (mDownloadOverlay != null) mDownloadOverlay.setVisibility(View.GONE);
     }
 
     private File getWowDataDir() {
