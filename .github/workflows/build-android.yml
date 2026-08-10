@@ -49,7 +49,9 @@ jobs:
         # but SDL2's source tree has headers at include/SDL.h (no SDL2 prefix).
         # This symlink makes both resolve: extern/SDL/include/SDL2/SDL.h → SDL.h
         ln -sf . extern/SDL/include/SDL2
-        cat android/app/sdl_android_patch.c >> extern/SDL/src/core/android/SDL_android.c
+        # SDL2 2.32.x: Android joystick forward decls use implicit declarations
+        # Workaround: allow implicit function declarations for SDL2 sources
+        echo "set(CMAKE_C_FLAGS \"\${CMAKE_C_FLAGS} -Wno-implicit-function-declaration\")" >> extern/SDL/CMakeLists.txt
         echo "SDL2 Android source patched"
 
     - name: Download GLM headers (header-only, not in NDK)
