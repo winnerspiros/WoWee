@@ -592,9 +592,9 @@ target_include_directories(wowee SYSTEM PRIVATE
     ${VK_BOOTSTRAP_DIR}/src
 )
 
-# Find OpenSSL libraries for linking (even when headers are stubbed)
-find_library(SSL_LIB ssl)
-find_library(CRYPTO_LIB crypto)
+# BoringSSL not available in NDK r27 sysroot for linking.
+# OpenSSL is stubbed — auth code excluded. Skip ssl/crypto link.
+# TODO: link prebuilt OpenSSL for Android when auth is functional.
 
 # Link libraries
 target_link_libraries(wowee PRIVATE
