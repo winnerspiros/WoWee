@@ -58,6 +58,10 @@ std::string getLogDir() {
     return getConfigDir() + "/logs";
 }
 
+std::string getConfigRoot() {
+    return getConfigDir();
+}
+
 } // namespace wowee::core
 
 #endif // WOWEE_ANDROID

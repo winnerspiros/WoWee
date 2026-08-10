@@ -23,8 +23,7 @@ android {
                     "-DWOWEE_ENABLE_AMD_FSR3_FRAMEGEN=OFF",
                     "-DWOWEE_BUILD_AMD_FSR3_RUNTIME=OFF",
                     "-DWOWEE_BUILD_TESTS=OFF",
-                    "-DWOWEE_ANDROID=ON",
-                    "-DANDROID_ALLOW_UNDEFINED_SYMBOLS=TRUE"
+                    "-DWOWEE_ANDROID=ON"
                 )
                 abiFilters("arm64-v8a")
             }
@@ -78,4 +77,5 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.lifecycle:lifecycle-process:2.8.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.google.oboe:oboe:1.9.0")
 }
