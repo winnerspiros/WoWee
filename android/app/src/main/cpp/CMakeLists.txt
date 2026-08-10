@@ -167,6 +167,8 @@ set(WOWEE_WORLD_SOURCES
 
     # Android-specific core (replaces config_paths.cpp, same GetExecutableDir)
     ${WOWEE_ANDROID_SRC}/android_config_paths.cpp
+    # Link-time stubs for excluded modules (OpenSSL, FFmpeg-dependent audio)
+    ${WOWEE_ANDROID_SRC}/android_link_stubs.cpp
 
     # Math
     ${WOWEE_SRC}/math/spline.cpp
