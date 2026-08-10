@@ -58,18 +58,19 @@ jobs:
 
     - name: Download OpenSSL prebuilt for Android (arm64-v8a)
       run: |
-        # Prebuilt OpenSSL 3.x from KDAB android_openssl
-        OPENSSL_URL="https://github.com/KDAB/android_openssl/raw/master/ssl_3/arm64-v8a.tar.gz"
-        echo "Downloading OpenSSL for Android..."
-        curl -sSL "$OPENSSL_URL" -o /tmp/openssl-android.tar.gz 2>/dev/null
-        if [ -s /tmp/openssl-android.tar.gz ]; then
-            mkdir -p extern/openssl-android
-            tar xzf /tmp/openssl-android.tar.gz -C extern/openssl-android 2>/dev/null || true
-            find extern/openssl-android -name '*.a' 2>/dev/null | head -5
-            echo "OpenSSL for Android installed"
-        else
-            echo "OpenSSL download failed — will use stubs"
-        fi
+        # KDAB android_openssl — download .a files + include headers
+        BASE="https://raw.githubusercontent.com/KDAB/android_openssl/master/no-asm/ssl_3"
+        mkdir -p extern/openssl-android/lib
+        mkdir -p extern/openssl-android/include
+        curl -sSL "$BASE/arm64-v8a/libssl.a" -o extern/openssl-android/lib/libssl.a
+        curl -sSL "$BASE/arm64-v8a/libcrypto.a" -o extern/openssl-android/lib/libcrypto.a
+        # Headers — shallow clone + cp
+        git clone --depth 1 https://github.com/KDAB/android_openssl.git /tmp/openssl-tmp 2>/dev/null
+        cp -r /tmp/openssl-tmp/no-asm/ssl_3/include/openssl extern/openssl-android/include/ 2>/dev/null || true
+        rm -rf /tmp/openssl-tmp
+        # Verify
+        ls -la extern/openssl-android/lib/*.a 2>/dev/null || echo "(libs missing)"
+        find extern/openssl-android/include -name 'ssl.h' 2>/dev/null | head -1 || echo "(headers missing)"
 
     - name: Download GLM headers (header-only, not in NDK)
       run: |
