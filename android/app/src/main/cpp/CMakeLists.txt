@@ -577,7 +577,8 @@ target_include_directories(wowee SYSTEM PRIVATE
 )
 
 # OpenSSL: use host system headers (NDK doesn't ship them)
-target_include_directories(wowee PRIVATE /usr/include)
+# Use raw -I because NDK toolchain strips system include paths
+target_compile_options(wowee PRIVATE -I/usr/include)
 
 # Link libraries
 target_link_libraries(wowee PRIVATE
