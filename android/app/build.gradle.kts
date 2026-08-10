@@ -34,7 +34,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false  // TODO: re-enable after verifying ProGuard rules
+            signingConfig = signingConfigs.getByName("debug")  // debug keystore for CI
+            isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
