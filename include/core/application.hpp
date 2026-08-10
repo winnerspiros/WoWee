@@ -121,8 +121,12 @@ public:
     // World loader access
     WorldLoader* getWorldLoader() { return worldLoader_.get(); }
 
-    // Audio coordinator access
+    // Audio coordinator access (stubbed on Android — no FFmpeg)
+#ifndef WOWEE_ANDROID
     audio::AudioCoordinator* getAudioCoordinator() { return audioCoordinator_.get(); }
+#else
+    audio::AudioCoordinator* getAudioCoordinator() { return nullptr; }
+#endif
 
 private:
     void update(float deltaTime);
@@ -160,7 +164,9 @@ private:
     std::unique_ptr<EntitySpawner> entitySpawner_;
     std::unique_ptr<AppearanceComposer> appearanceComposer_;
     std::unique_ptr<WorldLoader> worldLoader_;
+#ifndef WOWEE_ANDROID
     std::unique_ptr<audio::AudioCoordinator> audioCoordinator_;
+#endif
 
     // Callback handlers (extracted from setupUICallbacks)
     std::unique_ptr<NPCInteractionCallbackHandler> npcInteractionCallbacks_;

@@ -196,12 +196,13 @@ bool Application::initialize() {
         return false;
     }
 
-    // Audio: skip on Android (no audio backend yet — prevents SIGSEGV)
 #ifndef WOWEE_ANDROID
     audioCoordinator_ = std::make_unique<audio::AudioCoordinator>();
     if (!audioCoordinator_->initialize())
         LOG_WARNING("Audio coordinator initialization failed — game will run without audio");
     renderer->setAudioCoordinator(audioCoordinator_.get());
+#else
+    renderer->setAudioCoordinator(nullptr);
 #endif
 
     // Create UI manager
@@ -226,7 +227,7 @@ bool Application::initialize() {
 
     // Populate game services — all subsystems now available
     gameServices_.renderer = renderer.get();
-    gameServices_.audioCoordinator = audioCoordinator_.get();
+    gameServices_.audioCoordinator = getAudioCoordinator();
     gameServices_.assetManager = assetManager.get();
     gameServices_.expansionRegistry = expansionRegistry_.get();
 
@@ -331,7 +332,7 @@ bool Application::initialize() {
             uiServices.gameHandler = gameHandler.get();
             uiServices.expansionRegistry = expansionRegistry_.get();
             uiServices.addonManager = addonManager_.get();  // May be nullptr here, re-wire later
-            uiServices.audioCoordinator = audioCoordinator_.get();
+            uiServices.audioCoordinator = getAudioCoordinator();
             uiServices.entitySpawner = entitySpawner_.get();
             uiServices.appearanceComposer = appearanceComposer_.get();
             uiServices.worldLoader = worldLoader_.get();
@@ -355,7 +356,7 @@ bool Application::initialize() {
         addonManager_ = std::make_unique<addons::AddonManager>();
         addons::LuaServices luaSvc;
         luaSvc.window            = window.get();
-        luaSvc.audioCoordinator  = audioCoordinator_.get();
+        luaSvc.audioCoordinator  = getAudioCoordinator();
         luaSvc.expansionRegistry = expansionRegistry_.get();
         // The widget renderer needs the asset manager for Interface\ art and the
         // device to upload it; both exist by now.
@@ -773,7 +774,7 @@ bool Application::initialize() {
             uiServices.gameHandler = gameHandler.get();
             uiServices.expansionRegistry = expansionRegistry_.get();
             uiServices.addonManager = addonManager_.get();
-            uiServices.audioCoordinator = audioCoordinator_.get();
+            uiServices.audioCoordinator = getAudioCoordinator();
             uiServices.entitySpawner = entitySpawner_.get();
             uiServices.appearanceComposer = appearanceComposer_.get();
             uiServices.worldLoader = worldLoader_.get();
@@ -1098,8 +1099,8 @@ void Application::shutdown() {
     LOG_DEBUG("Renderer shutdown complete, resetting...");
     renderer.reset();
 
-    // Shutdown audio coordinator after renderer (renderer may reference audio during shutdown)
 #ifndef WOWEE_ANDROID
+    // Shutdown audio coordinator after renderer (renderer may reference audio during shutdown)
     if (audioCoordinator_) {
         audioCoordinator_->shutdown();
     }
@@ -1477,7 +1478,7 @@ void Application::performLogoutToLogin() {
         }
         if (auto* ac = renderer->getAnimationController()) ac->clearMount();
         renderer->setCharacterFollow(0);
-        if (auto* music = audioCoordinator_ ? audioCoordinator_->getMusicManager() : nullptr) {
+        if (auto* music = getAudioCoordinator() ? getAudioCoordinator()->getMusicManager() : nullptr) {
             music->stopMusic(0.0f);
         }
     }
@@ -2956,7 +2957,7 @@ void Application::setupUICallbacks() {
     // ── World entry, unstuck, hearthstone, bind point ──
     worldEntryCallbacks_ = std::make_unique<WorldEntryCallbackHandler>(
         *renderer, *gameHandler, worldLoader_.get(), entitySpawner_.get(),
-        audioCoordinator_.get(), assetManager.get());
+        getAudioCoordinator(), assetManager.get());
     worldEntryCallbacks_->setupCallbacks();
 
     // ── Entity spawn/despawn (creatures, players, game objects) ──
@@ -2978,12 +2979,12 @@ void Application::setupUICallbacks() {
 
     // ── NPC interaction: greeting, farewell, vendor, aggro voice ──
     npcInteractionCallbacks_ = std::make_unique<NPCInteractionCallbackHandler>(
-        *entitySpawner_, renderer.get(), *gameHandler, audioCoordinator_.get());
+        *entitySpawner_, renderer.get(), *gameHandler, getAudioCoordinator());
     npcInteractionCallbacks_->setupCallbacks();
 
     // ── Audio: music, sound effects, level-up, achievement, LFG ──
     audioCallbacks_ = std::make_unique<AudioCallbackHandler>(
-        *assetManager, audioCoordinator_.get(), renderer.get(),
+        *assetManager, getAudioCoordinator(), renderer.get(),
         uiManager.get(), *gameHandler);
     audioCallbacks_->setupCallbacks();
 
@@ -3186,7 +3187,7 @@ void Application::spawnPlayerCharacter() {
         playerCharacterSpawned = true;
 
         // Set voice profile to match character race/gender
-        if (auto* asm_ = audioCoordinator_ ? audioCoordinator_->getActivitySoundManager() : nullptr) {
+        if (auto* asm_ = getAudioCoordinator() ? getAudioCoordinator()->getActivitySoundManager() : nullptr) {
             const char* raceFolder = "Human";
             const char* raceBase = "Human";
             switch (playerRace_) {

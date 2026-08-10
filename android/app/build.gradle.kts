@@ -23,7 +23,7 @@ android {
                     "-DWOWEE_ENABLE_AMD_FSR3_FRAMEGEN=OFF",
                     "-DWOWEE_BUILD_AMD_FSR3_RUNTIME=OFF",
                     "-DWOWEE_BUILD_TESTS=OFF",
-                    "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+"-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
                     "-DWOWEE_ANDROID=ON",
                     "-DANDROID_ALLOW_UNDEFINED_SYMBOLS=TRUE"
                 )

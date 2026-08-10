@@ -237,7 +237,8 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/game/zone_manager.cpp
     ${WOWEE_SRC}/game/inventory.cpp
 
-    # Audio (stub on Android — original sources excluded, stub removed)
+    # Audio (auto-generated stubs for all audio manager classes)
+    ${WOWEE_ANDROID_SRC}/android_audio_stub_auto.cpp
 
     # Pipeline (asset loaders)
     ${WOWEE_SRC}/pipeline/blp_loader.cpp
@@ -566,7 +567,7 @@ set(WOWEE_WORLD_SOURCES
 # - src/main.cpp (desktop entry point with X11/signal handlers)
 # - src/game/warden_*.cpp (Warden x86 emulation — needs Unicorn, won't work on ARM)
 # - src/rendering/amd_fsr3_runtime.cpp (desktop FSR3, not available on mobile)
-# - Original audio files (use android_audio_stub.cpp)
+# - Original audio files (use android_audio_stub_auto.cpp)
 
 # --- Create shared library ---
 # Generate version header (same as desktop)
