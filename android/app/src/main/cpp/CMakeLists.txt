@@ -59,9 +59,11 @@ find_package(Vulkan REQUIRED)
 # --- OpenSSL stubbed on Android ---
 # NDK r27+ doesn't ship BoringSSL headers and host headers are sandboxed.
 # Auth/SRP code is excluded — the app won't connect to servers yet.
+# Stub headers provide dummy types for compilation.
 # TODO: download prebuilt OpenSSL for Android to enable auth.
 add_compile_definitions(WOWEE_NO_OPENSSL=1)
 set(WOWEE_OPENSSL_STUBBED TRUE)
+set(WOWEE_OPENSSL_STUB_DIR ${WOWEE_ANDROID_SRC}/openssl-stub)
 
 # --- GLM (header-only) ---
 set(GLM_DIR ${WOWEE_EXTERN}/glm)
@@ -565,6 +567,11 @@ if(NOT WOWEE_OPENSSL_STUBBED)
 endif()
 
 add_library(wowee SHARED ${WOWEE_WORLD_SOURCES})
+
+# OpenSSL stub headers for Android (if NDK BoringSSL unavailable)
+if(WOWEE_OPENSSL_STUBBED)
+    target_include_directories(wowee BEFORE PRIVATE ${WOWEE_OPENSSL_STUB_DIR})
+endif()
 
 # Include directories
 target_include_directories(wowee PRIVATE
