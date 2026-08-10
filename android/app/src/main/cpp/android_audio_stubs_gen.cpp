@@ -1,7 +1,4 @@
-/**
- * COMPLETE Android audio stubs — auto-generated from headers.
- * All non-inline public methods are no-op stubs.
- */
+/** AUTO-GENERATED Android audio stubs. AudioEngine in separate stub. */
 
 #include "audio/activity_sound_manager.hpp"
 #include "audio/ambient_sound_manager.hpp"
@@ -18,12 +15,9 @@
 #include "audio/ui_sound_manager.hpp"
 #include "game/zone_manager.hpp"
 #include "pipeline/asset_manager.hpp"
-#include <chrono>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <memory>
-#include <random>
-#include <shared_mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -86,23 +80,6 @@ void AudioCoordinator::shutdown() {}
 void AudioCoordinator::updateZoneAudio(const ZoneAudioContext& ctx) {}
 void AudioCoordinator::onOriginalSoundtrackDisabled(game::ZoneManager* zm) {}
 void AudioCoordinator::playZoneMusic(const std::string& music) {}
-// --- AudioEngine ---
-bool AudioEngine::initialize() { return false; }
-void AudioEngine::shutdown() {}
-void AudioEngine::setMasterVolume(float volume) {}
-void AudioEngine::setListenerPosition(const glm::vec3& position) {}
-void AudioEngine::setListenerOrientation(const glm::vec3& forward, const glm::vec3& up) {}
-bool AudioEngine::playSound2D(const std::vector<uint8_t>& wavData, float volume, float pitch) { return false; }
-bool AudioEngine::playSound2D(const std::string& mpqPath, float volume, float pitch) { return false; }
-uint32_t AudioEngine::playSound2DStoppable(const std::vector<uint8_t>& wavData, float volume) { return 0; }
-void AudioEngine::stopSound(uint32_t id) {}
-bool AudioEngine::playSound3D(const std::vector<uint8_t>& wavData, const glm::vec3& position, float volume, float pitch, float maxDistance) { return false; }
-bool AudioEngine::playSound3D(const std::string& mpqPath, const glm::vec3& position, float volume, float pitch, float maxDistance) { return false; }
-bool AudioEngine::playMusic(std::shared_ptr<const std::vector<uint8_t>> musicData, float volume, bool loop) { return false; }
-void AudioEngine::stopMusic() {}
-bool AudioEngine::isMusicPlaying() const { return false; }
-void AudioEngine::setMusicVolume(float volume) {}
-void AudioEngine::update(float deltaTime) {}
 // --- CombatSoundManager ---
 bool CombatSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void CombatSoundManager::shutdown() {}
@@ -250,11 +227,3 @@ void UiSoundManager::playMailReceived() {}
 void UiSoundManager::playMinimapPing() {}
 bool UiSoundManager::loadSound(const std::string& path, UISample& sample, pipeline::AssetManager* assets) { return false; }
 void UiSoundManager::playSound(const std::vector<UISample>& library) {}
-
-// --- AudioEngine singleton ---
-AudioEngine& AudioEngine::instance() {
-    static AudioEngine inst;
-    return inst;
-}
-
-} // namespace wowee::audio
