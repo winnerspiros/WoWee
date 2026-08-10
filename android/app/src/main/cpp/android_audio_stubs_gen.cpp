@@ -2,6 +2,7 @@
  * Android audio stubs — exact signatures from headers, no-ops.
  * Only includes symbols referenced in non-audio source files.
  */
+#include "audio/activity_sound_manager.hpp"
 #include "audio/audio_coordinator.hpp"
 #include "audio/music_manager.hpp"
 #include "audio/ui_sound_manager.hpp"
@@ -16,6 +17,22 @@
 #include <glm/glm.hpp>
 
 namespace wowee::audio {
+
+// --- ActivitySoundManager ---
+bool ActivitySoundManager::initialize(pipeline::AssetManager*) { return true; }
+void ActivitySoundManager::shutdown() {}
+void ActivitySoundManager::update(float) {}
+void ActivitySoundManager::playJump() {}
+void ActivitySoundManager::playLanding(FootstepSurface, bool) {}
+void ActivitySoundManager::setSwimmingState(bool, bool) {}
+void ActivitySoundManager::setCharacterVoiceProfile(const std::string&) {}
+void ActivitySoundManager::setCharacterVoiceProfile(const std::string&, const std::string&, bool) {}
+void ActivitySoundManager::playWaterEnter() {}
+void ActivitySoundManager::playWaterExit() {}
+void ActivitySoundManager::playMeleeSwing() {}
+void ActivitySoundManager::playAttackGrunt() {}
+void ActivitySoundManager::playWound(bool) {}
+void ActivitySoundManager::playDeath() {}
 
 // --- MusicManager ---
 bool MusicManager::initialize(pipeline::AssetManager*) { return true; }
