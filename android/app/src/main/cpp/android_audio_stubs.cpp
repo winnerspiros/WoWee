@@ -1,6 +1,5 @@
 /**
- * Android audio stubs — no-crash implementations for all audio interfaces.
- * AudioEngine uses Oboe for real mixing; high-level managers are no-ops.
+ * Android audio stubs — no-crash no-ops with matching header signatures.
  */
 #include "audio/audio_engine.hpp"
 #include "audio/audio_coordinator.hpp"
@@ -11,17 +10,17 @@
 #include "audio/combat_sound_manager.hpp"
 #include "audio/movement_sound_manager.hpp"
 #include "audio/footstep_manager.hpp"
+#include "game/zone_manager.hpp"
 #include "pipeline/asset_manager.hpp"
 #include <string>
 
 namespace wowee::audio {
 
-// --- AudioEngine (singleton, uses Oboe on Android) ---
+// --- AudioEngine ---
 AudioEngine& AudioEngine::instance() {
-    static AudioEngine engine;
-    return engine;
+    static AudioEngine e;
+    return e;
 }
-
 void AudioEngine::setMasterVolume(float) {}
 void AudioEngine::shutdown() {}
 
@@ -43,34 +42,27 @@ void SpellSoundManager::playImpact(MagicSchool, SpellPower) {}
 void SpellSoundManager::setVolumeScale(float) {}
 
 // --- MusicManager ---
+bool MusicManager::initialize(pipeline::AssetManager*) { return true; }
 void MusicManager::stopMusic(float) {}
-void MusicManager::stopMusic(int) {}
 void MusicManager::setVolume(int) {}
-void MusicManager::initialize(pipeline::AssetManager*) {}
 void MusicManager::update(float) {}
 void MusicManager::playFilePath(const std::string&, bool, float) {}
-void MusicManager::playZoneMusic(const std::string&, float) {}
-void MusicManager::setMusicEnabled(bool) {}
 
-// --- AmbientSoundManager ---
+// --- Ambient/Combat/Movement ---
 void AmbientSoundManager::setVolumeScale(float) {}
-
-// --- CombatSoundManager ---
 void CombatSoundManager::setVolumeScale(float) {}
-
-// --- MovementSoundManager ---
 void MovementSoundManager::setVolumeScale(float) {}
 
 // --- AudioCoordinator ---
+bool AudioCoordinator::initialize() { return true; }
+void AudioCoordinator::initializeWithAssets(pipeline::AssetManager*) {}
+void AudioCoordinator::updateZoneAudio(const ZoneAudioContext&) {}
+void AudioCoordinator::playZoneMusic(const std::string&) {}
 void AudioCoordinator::onOriginalSoundtrackDisabled(game::ZoneManager*) {}
-void AudioCoordinator::setMasterVolume(float) {}
-void AudioCoordinator::setMusicVolume(float) {}
-void AudioCoordinator::setEffectsVolume(float) {}
-void AudioCoordinator::update(float) {}
 void AudioCoordinator::shutdown() {}
 
 // --- FootstepManager ---
+bool FootstepManager::initialize(pipeline::AssetManager*) { return true; }
 void FootstepManager::update(float) {}
-void FootstepManager::initialize(pipeline::AssetManager*) {}
 
 } // namespace wowee::audio
