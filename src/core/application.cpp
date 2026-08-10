@@ -1099,10 +1099,12 @@ void Application::shutdown() {
     renderer.reset();
 
     // Shutdown audio coordinator after renderer (renderer may reference audio during shutdown)
+#ifndef WOWEE_ANDROID
     if (audioCoordinator_) {
         audioCoordinator_->shutdown();
     }
     audioCoordinator_.reset();
+#endif
 
     LOG_DEBUG("Resetting world...");
     world.reset();

@@ -637,6 +637,8 @@ endif()
 
 # Allow undefined symbols (audio/auth stubbed, NDK toolchain adds --no-undefined)
 target_link_options(wowee PRIVATE -Wl,--allow-shlib-undefined)
+# 16 KB page alignment (Android 15+ — API 35 ABI requirement)
+target_link_options(wowee PRIVATE -Wl,-z,max-page-size=16384)
 
 # Compile options
 target_compile_options(wowee PRIVATE
