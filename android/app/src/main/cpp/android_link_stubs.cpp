@@ -80,16 +80,4 @@ bool WardenModuleManager::cacheModule(const std::vector<uint8_t>& md5Hash, const
 bool WardenModuleManager::loadCachedModule(const std::vector<uint8_t>& md5Hash, std::vector<uint8_t>& moduleDataOut) { return false; }
 std::string WardenModuleManager::getCachePath(const std::vector<uint8_t>& md5Hash) { return {}; }
 
-
-// --- Warden constructors / destructors ---
-WardenHandler::WardenHandler(GameHandler&) {}
-WardenHandler::~WardenHandler() {}
-WardenCrypto::WardenCrypto() {}
-WardenCrypto::~WardenCrypto() {}
-WardenMemory::WardenMemory() {}
-WardenMemory::~WardenMemory() {}
-WardenModule::WardenModule() {}
-WardenModule::~WardenModule() {}
-WardenModuleManager::WardenModuleManager() {}
-WardenModuleManager::~WardenModuleManager() {}
 } // namespace wowee::game

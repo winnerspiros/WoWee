@@ -3031,7 +3031,9 @@ private:
     std::unique_ptr<InventoryHandler> inventoryHandler_;
     std::unique_ptr<SocialHandler>    socialHandler_;
     std::unique_ptr<QuestHandler>     questHandler_;
+    #ifndef WOWEE_ANDROID
     std::unique_ptr<WardenHandler>    wardenHandler_;
+#endif
 
     // Opcode dispatch table — built once in registerOpcodeHandlers(), called by handlePacket()
     using PacketHandler = std::function<void(network::Packet&)>;
@@ -3716,9 +3718,11 @@ private:
     float wardenGateNextStatusLog_ = 2.0f;
     uint32_t wardenPacketsAfterGate_ = 0;
     bool wardenCharEnumBlockedLogged_ = false;
+#ifndef WOWEE_ANDROID
     std::unique_ptr<WardenCrypto> wardenCrypto_;
     std::unique_ptr<WardenMemory> wardenMemory_;
     std::unique_ptr<WardenModuleManager> wardenModuleManager_;
+#endif
 
     // Warden module download state
     enum class WardenState {
