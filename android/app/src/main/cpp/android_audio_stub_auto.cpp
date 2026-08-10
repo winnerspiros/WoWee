@@ -1,9 +1,4 @@
-/**
- * AUTO-GENERATED Android audio stubs.
- * Generated from include/audio/*.hpp — 13 audio classes, all methods no-op.
- * AudioEngine singleton defined separately.
- */
-
+/** AUTO-GENERATED Android audio stubs. */
 #include "audio/activity_sound_manager.hpp"
 #include "audio/ambient_sound_manager.hpp"
 #include "audio/audio_coordinator.hpp"
@@ -25,8 +20,7 @@
 #include <string>
 #include <vector>
 
-namespace wowee {
-namespace audio {
+namespace wowee { namespace audio {
 
 // --- ActivitySoundManager ---
 ActivitySoundManager::ActivitySoundManager() {}
@@ -43,7 +37,7 @@ void ActivitySoundManager::playWaterEnter() {}
 void ActivitySoundManager::playWaterExit() {}
 void ActivitySoundManager::playMeleeSwing() {}
 void ActivitySoundManager::playAttackGrunt() {}
-void ActivitySoundManager::playWound(bool isCrit = false) {}
+void ActivitySoundManager::playWound(bool isCrit) {}
 void ActivitySoundManager::playDeath() {}
 void ActivitySoundManager::preloadCandidates(std::vector<Sample>& out, const std::vector<std::string>& candidates) {}
 void ActivitySoundManager::preloadLandingSet(FootstepSurface surface, const std::string& material) {}
@@ -62,7 +56,7 @@ AmbientSoundManager::AmbientSoundManager() {}
 AmbientSoundManager::~AmbientSoundManager() {}
 bool AmbientSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void AmbientSoundManager::shutdown() {}
-void AmbientSoundManager::update(float deltaTime, const glm::vec3& cameraPos, bool isIndoor, bool isSwimming = false, bool isBlacksmith = false) {}
+void AmbientSoundManager::update(float deltaTime, const glm::vec3& cameraPos, bool isIndoor, bool isSwimming, bool isBlacksmith) {}
 void AmbientSoundManager::setWeather(WeatherType type) {}
 void AmbientSoundManager::setZoneType(ZoneType type) {}
 void AmbientSoundManager::setZoneId(uint32_t zoneId) {}
@@ -101,16 +95,13 @@ void AudioEngine::shutdown() {}
 void AudioEngine::setMasterVolume(float volume) {}
 void AudioEngine::setListenerPosition(const glm::vec3& position) {}
 void AudioEngine::setListenerOrientation(const glm::vec3& forward, const glm::vec3& up) {}
-bool AudioEngine::playSound2D(const std::vector<uint8_t>& wavData, float volume = 1.0f, float pitch = 1.0f) { return false; }
-bool AudioEngine::playSound2D(const std::string& mpqPath, float volume = 1.0f, float pitch = 1.0f) { return false; }
-uint32_t AudioEngine::playSound2DStoppable(const std::vector<uint8_t>& wavData, float volume = 1.0f) { return 0; }
+bool AudioEngine::playSound2D(const std::vector<uint8_t>& wavData, float volume, float pitch) { return false; }
+bool AudioEngine::playSound2D(const std::string& mpqPath, float volume, float pitch) { return false; }
+uint32_t AudioEngine::playSound2DStoppable(const std::vector<uint8_t>& wavData, float volume) { return 0; }
 void AudioEngine::stopSound(uint32_t id) {}
-bool AudioEngine::playSound3D(const std::vector<uint8_t>& wavData, const glm::vec3& position,
-                     float volume = 1.0f, float pitch = 1.0f, float maxDistance = 100.0f) { return false; }
-bool AudioEngine::playSound3D(const std::string& mpqPath, const glm::vec3& position,
-                     float volume = 1.0f, float pitch = 1.0f, float maxDistance = 100.0f) { return false; }
-bool AudioEngine::playMusic(std::shared_ptr<const std::vector<uint8_t>> musicData,
-                   float volume = 1.0f, bool loop = true) { return false; }
+bool AudioEngine::playSound3D(const std::vector<uint8_t>& wavData, const glm::vec3& position, float volume, float pitch, float maxDistance) { return false; }
+bool AudioEngine::playSound3D(const std::string& mpqPath, const glm::vec3& position, float volume, float pitch, float maxDistance) { return false; }
+bool AudioEngine::playMusic(std::shared_ptr<const std::vector<uint8_t>> musicData, float volume, bool loop) { return false; }
 void AudioEngine::stopMusic() {}
 bool AudioEngine::isMusicPlaying() const { return false; }
 void AudioEngine::setMusicVolume(float volume) {}
@@ -122,16 +113,16 @@ CombatSoundManager::~CombatSoundManager() {}
 bool CombatSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void CombatSoundManager::shutdown() {}
 void CombatSoundManager::setVolumeScale(float scale) {}
-void CombatSoundManager::playWeaponSwing(WeaponSize size, bool isCrit = false) {}
-void CombatSoundManager::playWeaponMiss(bool twoHanded = false) {}
-void CombatSoundManager::playImpact(WeaponSize weaponSize, ImpactType impactType, bool isCrit = false) {}
+void CombatSoundManager::playWeaponSwing(WeaponSize size, bool isCrit) {}
+void CombatSoundManager::playWeaponMiss(bool twoHanded) {}
+void CombatSoundManager::playImpact(WeaponSize weaponSize, ImpactType impactType, bool isCrit) {}
 void CombatSoundManager::playClap() {}
 void CombatSoundManager::playPlayerAttackGrunt(PlayerRace race) {}
-void CombatSoundManager::playPlayerWound(PlayerRace race, bool isCrit = false) {}
+void CombatSoundManager::playPlayerWound(PlayerRace race, bool isCrit) {}
 void CombatSoundManager::playPlayerDeath(PlayerRace race) {}
 bool CombatSoundManager::loadSound(const std::string& path, CombatSample& sample, pipeline::AssetManager* assets) { return false; }
-void CombatSoundManager::playSound(const std::vector<CombatSample>& library, float volumeMultiplier = 1.0f) {}
-void CombatSoundManager::playRandomSound(const std::vector<CombatSample>& library, float volumeMultiplier = 1.0f) {}
+void CombatSoundManager::playSound(const std::vector<CombatSample>& library, float volumeMultiplier) {}
+void CombatSoundManager::playRandomSound(const std::vector<CombatSample>& library, float volumeMultiplier) {}
 
 // --- FootstepManager ---
 FootstepManager::FootstepManager() {}
@@ -141,10 +132,8 @@ void FootstepManager::shutdown() {}
 void FootstepManager::update(float deltaTime) {}
 void FootstepManager::playFootstep(FootstepSurface surface, bool sprinting) {}
 void FootstepManager::playMountFootstep(FootstepSurface surface, FootstepBank bank) {}
-void FootstepManager::preloadSurface(SurfaceSamples* bank, FootstepSurface surface,
-                        const std::vector<std::string>& candidates, const char* bankName) {}
-bool FootstepManager::playRandomStep(FootstepSurface surface, FootstepBank bank,
-                        float minInterval, float volumeMul) { return false; }
+void FootstepManager::preloadSurface(SurfaceSamples* bank, FootstepSurface surface, const std::vector<std::string>& candidates, const char* bankName) {}
+bool FootstepManager::playRandomStep(FootstepSurface surface, FootstepBank bank, float minInterval, float volumeMul) { return false; }
 static const char* FootstepManager::surfaceName(FootstepSurface surface) { return nullptr; }
 
 // --- MountSoundManager ---
@@ -153,7 +142,7 @@ MountSoundManager::~MountSoundManager() {}
 bool MountSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void MountSoundManager::shutdown() {}
 void MountSoundManager::update(float deltaTime) {}
-void MountSoundManager::onMount(uint32_t creatureDisplayId, bool isFlying, const std::string& modelPath = "") {}
+void MountSoundManager::onMount(uint32_t creatureDisplayId, bool isFlying, const std::string& modelPath) {}
 void MountSoundManager::onDismount() {}
 void MountSoundManager::setMoving(bool moving) {}
 void MountSoundManager::setFlying(bool flying) {}
@@ -182,17 +171,17 @@ void MovementSoundManager::playWaterFootstep(CharacterSize size) {}
 void MovementSoundManager::playJump(PlayerRace race) {}
 void MovementSoundManager::playLand(PlayerRace race) {}
 bool MovementSoundManager::loadSound(const std::string& path, MovementSample& sample, pipeline::AssetManager* assets) { return false; }
-void MovementSoundManager::playSound(const std::vector<MovementSample>& library, float volumeMultiplier = 1.0f) {}
-void MovementSoundManager::playRandomSound(const std::vector<MovementSample>& library, float volumeMultiplier = 1.0f) {}
+void MovementSoundManager::playSound(const std::vector<MovementSample>& library, float volumeMultiplier) {}
+void MovementSoundManager::playRandomSound(const std::vector<MovementSample>& library, float volumeMultiplier) {}
 
 // --- MusicManager ---
 MusicManager::MusicManager() {}
 MusicManager::~MusicManager() {}
 bool MusicManager::initialize(pipeline::AssetManager* assets) { return false; }
 void MusicManager::shutdown() {}
-void MusicManager::stopMusic(float fadeMs = 2000.0f) {}
-void MusicManager::crossfadeTo(const std::string& mpqPath, float fadeMs = 3000.0f) {}
-void MusicManager::crossfadeToFile(const std::string& filePath, float fadeMs = 3000.0f) {}
+void MusicManager::stopMusic(float fadeMs) {}
+void MusicManager::crossfadeTo(const std::string& mpqPath, float fadeMs) {}
+void MusicManager::crossfadeToFile(const std::string& filePath, float fadeMs) {}
 void MusicManager::update(float deltaTime) {}
 void MusicManager::setVolume(int volume) {}
 void MusicManager::setUnderwaterMode(bool underwater) {}
@@ -210,10 +199,8 @@ void NpcVoiceManager::playGreeting(uint64_t npcGuid, VoiceType voiceType, const 
 void NpcVoiceManager::playFarewell(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
 void NpcVoiceManager::playVendor(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
 void NpcVoiceManager::playPissed(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
-void NpcVoiceManager::playAggro(uint64_t npcGuid, uint32_t displayId, VoiceType voiceType,
-                   const glm::vec3& position) {}
-void NpcVoiceManager::playCombatAttack(uint64_t npcGuid, uint32_t displayId,
-                          const glm::vec3& position) {}
+void NpcVoiceManager::playAggro(uint64_t npcGuid, uint32_t displayId, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::playCombatAttack(uint64_t npcGuid, uint32_t displayId, const glm::vec3& position) {}
 void NpcVoiceManager::playFlee(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
 void NpcVoiceManager::loadVoiceSounds() {}
 void NpcVoiceManager::loadCreatureAggroSounds() {}
@@ -246,8 +233,8 @@ void SpellSoundManager::playLightningBolt() {}
 void SpellSoundManager::playHeal() {}
 void SpellSoundManager::playShadowBolt() {}
 bool SpellSoundManager::loadSound(const std::string& path, SpellSample& sample, pipeline::AssetManager* assets) { return false; }
-void SpellSoundManager::playSound(const std::vector<SpellSample>& library, float volumeMultiplier = 1.0f) {}
-void SpellSoundManager::playRandomSound(const std::vector<SpellSample>& library, float volumeMultiplier = 1.0f) {}
+void SpellSoundManager::playSound(const std::vector<SpellSample>& library, float volumeMultiplier) {}
+void SpellSoundManager::playRandomSound(const std::vector<SpellSample>& library, float volumeMultiplier) {}
 
 // --- UiSoundManager ---
 UiSoundManager::UiSoundManager() {}
