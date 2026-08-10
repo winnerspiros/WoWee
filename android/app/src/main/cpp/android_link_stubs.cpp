@@ -23,6 +23,8 @@ namespace audio {
 
     void SpellSoundManager::playCast(MagicSchool) {}
     void SpellSoundManager::playImpact(MagicSchool, SpellPower) {}
+    void MusicManager::stopMusic(float) {}
+    void UiSoundManager::playLevelUp() {}
 }  // namespace audio
 
 }  // namespace wowee

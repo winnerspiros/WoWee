@@ -52,6 +52,8 @@ jobs:
         # SDL2 2.32.x: Android joystick forward decls use implicit declarations
         # Workaround: allow implicit function declarations for SDL2 sources
         echo "set(CMAKE_C_FLAGS \"\${CMAKE_C_FLAGS} -Wno-implicit-function-declaration\")" >> extern/SDL/CMakeLists.txt
+        # Ensure joystick Android source is compiled (SDL2 may exclude it)
+        echo "target_sources(SDL2-static PRIVATE src/joystick/android/SDL_sysjoystick.c)" >> extern/SDL/CMakeLists.txt
         echo "SDL2 Android source patched"
 
     - name: Download GLM headers (header-only, not in NDK)
