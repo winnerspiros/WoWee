@@ -554,6 +554,13 @@ set(WOWEE_WORLD_SOURCES
 # - Original audio files (use android_audio_stub.cpp)
 
 # --- Create shared library ---
+# Generate version header (same as desktop)
+set(WOWEE_VERSION_HEADER ${CMAKE_BINARY_DIR}/generated/core/version.hpp)
+execute_process(COMMAND ${CMAKE_COMMAND}
+    -DSRC_DIR=${WOWEE_ROOT}
+    -DIN_FILE=${WOWEE_ROOT}/include/core/version.hpp.in
+    -DOUT_FILE=${WOWEE_VERSION_HEADER}
+    -P ${WOWEE_ROOT}/cmake/GitVersion.cmake)
 # OpenSSL-dependent auth files: added via list(APPEND) because CMake
 # if() blocks don't work inside set() multiline values.
 if(NOT WOWEE_OPENSSL_STUBBED)
@@ -577,6 +584,7 @@ target_include_directories(wowee PRIVATE
     ${WOWEE_INCLUDE}
     ${WOWEE_SRC}
     ${WOWEE_ANDROID_SRC}
+    ${CMAKE_BINARY_DIR}/generated     # version.hpp
 )
 
 target_include_directories(wowee SYSTEM PRIVATE
