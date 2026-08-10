@@ -58,6 +58,9 @@ bool openExternalUrl(const std::string& url) {
     HINSTANCE rc = ShellExecuteA(nullptr, "open", url.c_str(),
                                  nullptr, nullptr, SW_SHOWNORMAL);
     return reinterpret_cast<INT_PTR>(rc) > 32;
+#elif defined(WOWEE_ANDROID)
+    (void)url;
+    return false;  // TODO: JNI intent ACTION_VIEW
 #else
 #  if defined(__APPLE__)
     const char* opener = "/usr/bin/open";
