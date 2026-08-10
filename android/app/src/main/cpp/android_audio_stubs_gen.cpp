@@ -125,7 +125,7 @@ void FootstepManager::playFootstep(FootstepSurface surface, bool sprinting) {}
 void FootstepManager::playMountFootstep(FootstepSurface surface, FootstepBank bank) {}
 void FootstepManager::preloadSurface(SurfaceSamples* bank, FootstepSurface surface, const std::vector<std::string>& candidates, const char* bankName) {}
 bool FootstepManager::playRandomStep(FootstepSurface surface, FootstepBank bank, float minInterval, float volumeMul) { return false; }
-static const char* FootstepManager::surfaceName(FootstepSurface surface) { return nullptr; }
+const char* FootstepManager::surfaceName(FootstepSurface surface) { return nullptr; }
 // --- MountSoundManager ---
 bool MountSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void MountSoundManager::shutdown() {}
@@ -146,7 +146,7 @@ void MountSoundManager::updateMountSounds() {}
 void MountSoundManager::stopAllMountSounds() {}
 void MountSoundManager::loadMountSounds() {}
 bool MountSoundManager::loadSound(const std::string& path, MountSample& sample) { return false; }
-const FamilySounds& MountSoundManager::getCurrentFamilySounds() const { return {}; }
+const MountSoundManager::FamilySounds& MountSoundManager::getCurrentFamilySounds() const { return {}; }
 // --- MovementSoundManager ---
 bool MovementSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void MovementSoundManager::shutdown() {}
