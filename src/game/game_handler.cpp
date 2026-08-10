@@ -136,8 +136,10 @@ GameHandler::GameHandler(GameServices& services)
     // Initialize transport manager
     transportManager_ = std::make_unique<TransportManager>();
 
-    // Initialize Warden module manager
+    #ifndef WOWEE_ANDROID
+    // Initialize Warden module manager (disabled on Android — no Unicorn/x86 emulation)
     wardenModuleManager_ = std::make_unique<WardenModuleManager>();
+#endif
 
     // Initialize domain handlers
     entityController_ = std::make_unique<EntityController>(*this);
@@ -148,8 +150,10 @@ GameHandler::GameHandler(GameServices& services)
     inventoryHandler_ = std::make_unique<InventoryHandler>(*this);
     socialHandler_    = std::make_unique<SocialHandler>(*this);
     questHandler_     = std::make_unique<QuestHandler>(*this);
+    #ifndef WOWEE_ANDROID
     wardenHandler_    = std::make_unique<WardenHandler>(*this);
     wardenHandler_->initModuleManager();
+#endif
 
     // Default action bar layout
     actionBar[0].type = ActionBarSlot::SPELL;
