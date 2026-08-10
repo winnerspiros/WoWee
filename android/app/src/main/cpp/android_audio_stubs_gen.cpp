@@ -227,3 +227,5 @@ void UiSoundManager::playMailReceived() {}
 void UiSoundManager::playMinimapPing() {}
 bool UiSoundManager::loadSound(const std::string& path, UISample& sample, pipeline::AssetManager* assets) { return false; }
 void UiSoundManager::playSound(const std::vector<UISample>& library) {}
+
+} // namespace wowee::audio
