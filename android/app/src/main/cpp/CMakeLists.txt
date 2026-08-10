@@ -222,8 +222,7 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/game/zone_manager.cpp
     ${WOWEE_SRC}/game/inventory.cpp
 
-    # Audio (stub on Android — see android_audio_stub.cpp)
-    ${WOWEE_ANDROID_SRC}/android_audio_stub.cpp
+    # Audio (stub on Android — original sources excluded, stub removed)
 
     # Pipeline (asset loaders)
     ${WOWEE_SRC}/pipeline/blp_loader.cpp
