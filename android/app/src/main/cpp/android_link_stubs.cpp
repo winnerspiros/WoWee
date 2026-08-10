@@ -27,11 +27,9 @@ extern "C" {
 
 } // namespace wowee
 
-// Warden stubs auto-generated from headers below:
 namespace wowee::game {
 
 // --- WardenHandler ---
-explicit WardenHandler::WardenHandler(GameHandler& owner) { return {}; }
 void WardenHandler::registerOpcodes(DispatchTable& table) {}
 void WardenHandler::reset() {}
 void WardenHandler::initModuleManager() {}
@@ -41,8 +39,8 @@ bool WardenHandler::loadWardenCRFile(const std::string& moduleHashHex) { return 
 // --- WardenCrypto ---
 bool WardenCrypto::initFromSessionKey(const std::vector<uint8_t>& sessionKey) { return false; }
 void WardenCrypto::replaceKeys(const std::vector<uint8_t>& newEncryptKey, const std::vector<uint8_t>& newDecryptKey) {}
-std::vector<uint8_t> WardenCrypto::decrypt(const std::vector<uint8_t>& data) { return 0; }
-std::vector<uint8_t> WardenCrypto::encrypt(const std::vector<uint8_t>& data) { return 0; }
+std::vector<uint8_t> WardenCrypto::decrypt(const std::vector<uint8_t>& data) { return {}; }
+std::vector<uint8_t> WardenCrypto::encrypt(const std::vector<uint8_t>& data) { return {}; }
 void WardenCrypto::initRC4(const std::vector<uint8_t>& key, std::vector<uint8_t>& state, uint8_t& i, uint8_t& j) {}
 void WardenCrypto::processRC4(const uint8_t* input, uint8_t* output, size_t length, std::vector<uint8_t>& state, uint8_t& i, uint8_t& j) {}
 void WardenCrypto::sha1RandxGenerate(const std::vector<uint8_t>& seed, uint8_t* outputEncryptKey, uint8_t* outputDecryptKey) {}
@@ -76,7 +74,7 @@ bool WardenModule::bindAPIs() { return false; }
 bool WardenModule::initializeModule() { return false; }
 // --- WardenModuleManager ---
 bool WardenModuleManager::hasModule(const std::vector<uint8_t>& md5Hash) { return false; }
-std::shared_ptr<WardenModule> WardenModuleManager::getModule(const std::vector<uint8_t>& md5Hash) { return nullptr; }
+std::shared_ptr<WardenModule> WardenModuleManager::getModule(const std::vector<uint8_t>& md5Hash) { return {}; }
 bool WardenModuleManager::receiveModuleChunk(const std::vector<uint8_t>& md5Hash, const std::vector<uint8_t>& chunkData, bool isComplete) { return false; }
 bool WardenModuleManager::cacheModule(const std::vector<uint8_t>& md5Hash, const std::vector<uint8_t>& moduleData) { return false; }
 bool WardenModuleManager::loadCachedModule(const std::vector<uint8_t>& md5Hash, std::vector<uint8_t>& moduleDataOut) { return false; }
