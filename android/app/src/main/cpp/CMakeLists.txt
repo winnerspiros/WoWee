@@ -177,8 +177,6 @@ set(WOWEE_WORLD_SOURCES
 
     # Android-specific core (replaces config_paths.cpp, same GetExecutableDir)
     ${WOWEE_ANDROID_SRC}/android_config_paths.cpp
-    # Audio stubs (no-crash no-ops, AudioEngine singleton)
-    ${WOWEE_ANDROID_SRC}/android_audio_stubs.cpp
     # SDL2 joystick stubs (not compiled in SDL2-static for Android)
     ${WOWEE_ANDROID_SRC}/android_link_stubs.cpp
 
