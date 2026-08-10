@@ -179,8 +179,6 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_ANDROID_SRC}/android_config_paths.cpp
     # Audio: AudioEngine stub (prevents SIGSEGV from singleton calls)
     ${WOWEE_ANDROID_SRC}/android_audio_engine_stub.cpp
-    # Audio: auto-generated stubs for ALL audio managers (697 methods)
-    ${WOWEE_ANDROID_SRC}/android_audio_stubs_gen.cpp
     # SDL2 joystick stubs (not compiled in SDL2-static for Android)
     ${WOWEE_ANDROID_SRC}/android_link_stubs.cpp
 
@@ -637,8 +635,8 @@ elseif(EXISTS ${GLM_DIR})
     target_include_directories(wowee SYSTEM PRIVATE ${GLM_DIR})
 endif()
 
-# Allow undefined symbols (audio/auth stubbed, NDK toolchain adds --no-undefined)
-target_link_options(wowee PRIVATE -Wl,--allow-shlib-undefined)
+# Allow undefined audio symbols at runtime (weak refs, resolve to 0)
+target_link_options(wowee PRIVATE -Wl,--unresolved-symbols=ignore-all)
 # 16 KB page alignment (Android 15+ — API 35 ABI requirement)
 target_link_options(wowee PRIVATE -Wl,-z,max-page-size=16384)
 
