@@ -1,4 +1,4 @@
-/** AUTO-GENERATED Android audio stubs. AudioEngine in separate stub. */
+/** AUTO-GENERATED Android audio stubs. */
 
 #include "audio/activity_sound_manager.hpp"
 #include "audio/ambient_sound_manager.hpp"
@@ -138,6 +138,8 @@ void MovementSoundManager::playRandomSound(const std::vector<MovementSample>& li
 // --- MusicManager ---
 bool MusicManager::initialize(pipeline::AssetManager* assets) { return false; }
 void MusicManager::shutdown() {}
+void MusicManager::playMusic(const std::string& mpqPath, bool loop, float fadeInMs) {}
+void MusicManager::playFilePath(const std::string& filePath, bool loop, float fadeInMs) {}
 void MusicManager::stopMusic(float fadeMs) {}
 void MusicManager::crossfadeTo(const std::string& mpqPath, float fadeMs) {}
 void MusicManager::crossfadeToFile(const std::string& filePath, float fadeMs) {}
