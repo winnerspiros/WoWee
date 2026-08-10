@@ -8,7 +8,6 @@
 #include "core/application.hpp"
 #include "core/config_paths.hpp"
 #include "core/logger.hpp"
-#include "core/version.hpp"
 
 #include <SDL2/SDL.h>
 #include <android/log.h>
@@ -48,7 +47,7 @@ extern "C" int SDL_main(int /*argc*/, char* /*argv*/[]) {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     SDL_LogSetOutputFunction(androidLogCallback, nullptr);
 
-    SDL_Log("WoWee %s — Android arm64-v8a", WOWEE_VERSION_STRING);
+    SDL_Log("WoWee — Android arm64-v8a starting");
     SDL_Log("Data path: %s", getenv("WOW_DATA_PATH") ?: "(not set)");
 
     try {
