@@ -164,9 +164,8 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/core/logger.cpp
     ${WOWEE_SRC}/core/memory_monitor.cpp
     ${WOWEE_SRC}/core/app_clock.cpp
-    ${WOWEE_SRC}/core/config_paths.cpp
 
-    # Android-specific core files
+    # Android-specific core (replaces config_paths.cpp, same GetExecutableDir)
     ${WOWEE_ANDROID_SRC}/android_config_paths.cpp
 
     # Math
