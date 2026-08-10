@@ -196,11 +196,13 @@ bool Application::initialize() {
         return false;
     }
 
-    // Create and initialize audio coordinator (owns all audio managers)
+    // Audio: skip on Android (no audio backend yet — prevents SIGSEGV)
+#ifndef WOWEE_ANDROID
     audioCoordinator_ = std::make_unique<audio::AudioCoordinator>();
     if (!audioCoordinator_->initialize())
         LOG_WARNING("Audio coordinator initialization failed — game will run without audio");
     renderer->setAudioCoordinator(audioCoordinator_.get());
+#endif
 
     // Create UI manager
     uiManager = std::make_unique<ui::UIManager>();

@@ -1164,7 +1164,9 @@ void GameScreen::renderMinimapMarkers(game::GameHandler& gameHandler) {
     auto applyMuteState = [&]() {
         auto* ac = services_.audioCoordinator;
         float masterScale = settingsPanel_.soundMuted_ ? 0.0f : static_cast<float>(settingsPanel_.pendingMasterVolume) / 100.0f;
+#ifndef WOWEE_ANDROID
         audio::AudioEngine::instance().setMasterVolume(masterScale);
+#endif
         if (!ac) return;
         if (auto* music = ac->getMusicManager()) {
             music->setVolume(settingsPanel_.pendingMusicVolume);
