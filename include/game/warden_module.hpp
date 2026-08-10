@@ -152,7 +152,9 @@ private:
     uint32_t moduleBase_;                  // Module base address (for emulator)
     size_t relocDataOffset_ = 0;           // Offset into decompressedData_ where relocation data starts
     WardenFuncList funcList_;              // Callback functions
+    #ifndef WOWEE_ANDROID
     std::unique_ptr<WardenEmulator> emulator_; // Cross-platform x86 emulator
+#endif
     uint32_t emulatedPacketHandlerAddr_ = 0;   // Raw emulated VA for 4-arg PacketHandler call
 
     // Dependencies injected via setCallbackDependencies() for module callbacks.

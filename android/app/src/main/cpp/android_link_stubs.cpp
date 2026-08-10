@@ -83,7 +83,6 @@ std::string WardenModuleManager::getCachePath(const std::vector<uint8_t>& md5Has
 
 // --- Warden constructors / destructors ---
 WardenHandler::WardenHandler(GameHandler& owner) : owner_(owner) {}
-WardenHandler::~WardenHandler() {}
 WardenCrypto::WardenCrypto() {}
 WardenCrypto::~WardenCrypto() {}
 WardenMemory::WardenMemory() {}
