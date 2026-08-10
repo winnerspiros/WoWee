@@ -179,6 +179,8 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_ANDROID_SRC}/android_config_paths.cpp
     # Audio: AudioEngine stub (prevents SIGSEGV from singleton calls)
     ${WOWEE_ANDROID_SRC}/android_audio_engine_stub.cpp
+    # Audio: auto-generated stubs for ALL audio managers (697 methods)
+    ${WOWEE_ANDROID_SRC}/android_audio_stubs_gen.cpp
     # SDL2 joystick stubs (not compiled in SDL2-static for Android)
     ${WOWEE_ANDROID_SRC}/android_link_stubs.cpp
 
