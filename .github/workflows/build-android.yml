@@ -54,7 +54,18 @@ jobs:
         echo "set(CMAKE_C_FLAGS \"\${CMAKE_C_FLAGS} -Wno-implicit-function-declaration\")" >> extern/SDL/CMakeLists.txt
         # Ensure joystick Android source is compiled (SDL2 may exclude it)
         echo "target_sources(SDL2-static PRIVATE src/joystick/android/SDL_sysjoystick.c)" >> extern/SDL/CMakeLists.txt
-        echo "SDL2 Android source patched"
+        echo "SDL2 patched"
+
+    - name: Download OpenSSL prebuilt for Android (arm64-v8a)
+      run: |
+        # Prebuilt OpenSSL 3.x from KDAB android_openssl
+        OPENSSL_URL="https://github.com/KDAB/android_openssl/raw/master/ssl_3/arm64-v8a.tar.gz"
+        echo "Downloading OpenSSL for Android..."
+        curl -sSL "$OPENSSL_URL" -o /tmp/openssl-android.tar.gz
+        mkdir -p extern/openssl-android
+        tar xzf /tmp/openssl-android.tar.gz -C extern/openssl-android
+        find extern/openssl-android -name '*.a' -o -name '*.h' | head -10
+        echo "OpenSSL for Android installed"
 
     - name: Download GLM headers (header-only, not in NDK)
       run: |
