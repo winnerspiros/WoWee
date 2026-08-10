@@ -592,6 +592,10 @@ target_include_directories(wowee SYSTEM PRIVATE
     ${VK_BOOTSTRAP_DIR}/src
 )
 
+# Find OpenSSL libraries for linking (even when headers are stubbed)
+find_library(SSL_LIB ssl)
+find_library(CRYPTO_LIB crypto)
+
 # Link libraries
 target_link_libraries(wowee PRIVATE
     SDL2-static
@@ -604,8 +608,8 @@ target_link_libraries(wowee PRIVATE
     ${CMAKE_DL_LIBS}
     android
     log
-    ssl
-    crypto
+    ${SSL_LIB}
+    ${CRYPTO_LIB}
 )
 
 # Link GLM (header-only)
