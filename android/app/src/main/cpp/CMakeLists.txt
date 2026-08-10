@@ -184,14 +184,6 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/auth/rc4.cpp
     ${WOWEE_SRC}/auth/vanilla_crypt.cpp
 
-    # OpenSSL-dependent (excluded until prebuilt libs available)
-    if(NOT WOWEE_OPENSSL_STUBBED)
-        ${WOWEE_SRC}/auth/auth_handler.cpp
-        ${WOWEE_SRC}/auth/srp.cpp
-        ${WOWEE_SRC}/auth/big_num.cpp
-        ${WOWEE_SRC}/auth/crypto.cpp
-    endif()
-
     # Game
     ${WOWEE_SRC}/game/expansion_profile.cpp
     ${WOWEE_SRC}/game/opcode_table.cpp
@@ -561,6 +553,17 @@ set(WOWEE_WORLD_SOURCES
 # - Original audio files (use android_audio_stub.cpp)
 
 # --- Create shared library ---
+# OpenSSL-dependent auth files: added via list(APPEND) because CMake
+# if() blocks don't work inside set() multiline values.
+if(NOT WOWEE_OPENSSL_STUBBED)
+    list(APPEND WOWEE_WORLD_SOURCES
+        ${WOWEE_SRC}/auth/auth_handler.cpp
+        ${WOWEE_SRC}/auth/srp.cpp
+        ${WOWEE_SRC}/auth/big_num.cpp
+        ${WOWEE_SRC}/auth/crypto.cpp
+    )
+endif()
+
 add_library(wowee SHARED ${WOWEE_WORLD_SOURCES})
 
 # Include directories
