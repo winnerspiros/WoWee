@@ -237,9 +237,6 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/game/zone_manager.cpp
     ${WOWEE_SRC}/game/inventory.cpp
 
-    # Audio (auto-generated stubs for all audio manager classes)
-    ${WOWEE_ANDROID_SRC}/android_audio_stub_auto.cpp
-
     # Pipeline (asset loaders)
     ${WOWEE_SRC}/pipeline/blp_loader.cpp
     ${WOWEE_SRC}/pipeline/dbc_loader.cpp
@@ -567,7 +564,7 @@ set(WOWEE_WORLD_SOURCES
 # - src/main.cpp (desktop entry point with X11/signal handlers)
 # - src/game/warden_*.cpp (Warden x86 emulation — needs Unicorn, won't work on ARM)
 # - src/rendering/amd_fsr3_runtime.cpp (desktop FSR3, not available on mobile)
-# - Original audio files (use android_audio_stub_auto.cpp)
+# - Original audio files (use android_audio_engine_stub.cpp + android_audio_stubs_gen.cpp)
 
 # --- Create shared library ---
 # Generate version header (same as desktop)
@@ -638,8 +635,8 @@ elseif(EXISTS ${GLM_DIR})
     target_include_directories(wowee SYSTEM PRIVATE ${GLM_DIR})
 endif()
 
-# Allow undefined symbols for any remaining audio stubs
-target_link_options(wowee PRIVATE -Wl,--allow-shlib-undefined)
+# Allow undefined audio symbols at runtime (weak refs, resolve to 0)
+target_link_options(wowee PRIVATE -Wl,--unresolved-symbols=ignore-all)
 # 16 KB page alignment (Android 15+ — API 35 ABI requirement)
 target_link_options(wowee PRIVATE -Wl,-z,max-page-size=16384)
 
