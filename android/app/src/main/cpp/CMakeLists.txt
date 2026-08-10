@@ -620,6 +620,9 @@ elseif(EXISTS ${GLM_DIR})
     target_include_directories(wowee SYSTEM PRIVATE ${GLM_DIR})
 endif()
 
+# Allow undefined symbols (audio/auth stubbed, NDK toolchain adds --no-undefined)
+target_link_options(wowee PRIVATE -Wl,--allow-shlib-undefined)
+
 # Compile options
 target_compile_options(wowee PRIVATE
     -O3
