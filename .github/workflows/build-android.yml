@@ -66,11 +66,16 @@ jobs:
         curl -sSL "$BASE/arm64-v8a/libcrypto.a" -o extern/openssl-android/lib/libcrypto.a
         # Headers — shallow clone + cp
         git clone --depth 1 https://github.com/KDAB/android_openssl.git /tmp/openssl-tmp 2>/dev/null
-        cp -r /tmp/openssl-tmp/no-asm/ssl_3/include/openssl extern/openssl-android/include/ 2>/dev/null || true
+        if [ -d /tmp/openssl-tmp/no-asm/ssl_3/include/openssl ]; then
+            cp -r /tmp/openssl-tmp/no-asm/ssl_3/include/openssl extern/openssl-android/include/
+            echo "OpenSSL headers installed"
+        else
+            echo "OpenSSL header clone failed"
+        fi
         rm -rf /tmp/openssl-tmp
         # Verify
         ls -la extern/openssl-android/lib/*.a 2>/dev/null || echo "(libs missing)"
-        find extern/openssl-android/include -name 'ssl.h' 2>/dev/null | head -1 || echo "(headers missing)"
+        ls extern/openssl-android/include/openssl/ssl.h 2>/dev/null || echo "(headers missing)"
 
     - name: Download GLM headers (header-only, not in NDK)
       run: |
