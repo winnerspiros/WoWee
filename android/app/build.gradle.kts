@@ -23,7 +23,8 @@ android {
                     "-DWOWEE_ENABLE_AMD_FSR3_FRAMEGEN=OFF",
                     "-DWOWEE_BUILD_AMD_FSR3_RUNTIME=OFF",
                     "-DWOWEE_BUILD_TESTS=OFF",
-                    "-DWOWEE_ANDROID=ON"
+                    "-DWOWEE_ANDROID=ON",
+                    "-DANDROID_ALLOW_UNDEFINED_SYMBOLS=TRUE"
                 )
                 abiFilters("arm64-v8a")
             }
