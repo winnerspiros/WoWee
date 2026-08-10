@@ -1,117 +1,260 @@
 /**
- * Android audio stubs — exact signatures from headers, no-ops.
- * Only includes symbols referenced in non-audio source files.
+ * COMPLETE Android audio stubs — auto-generated from headers.
+ * All non-inline public methods are no-op stubs.
  */
+
 #include "audio/activity_sound_manager.hpp"
-#include "audio/audio_coordinator.hpp"
-#include "audio/music_manager.hpp"
-#include "audio/ui_sound_manager.hpp"
-#include "audio/spell_sound_manager.hpp"
-#include "audio/npc_voice_manager.hpp"
-#include "audio/footstep_manager.hpp"
 #include "audio/ambient_sound_manager.hpp"
+#include "audio/audio_coordinator.hpp"
+#include "audio/audio_engine.hpp"
 #include "audio/combat_sound_manager.hpp"
+#include "audio/footstep_manager.hpp"
+#include "audio/mount_sound_manager.hpp"
 #include "audio/movement_sound_manager.hpp"
+#include "audio/music_manager.hpp"
+#include "audio/npc_voice_manager.hpp"
+#include "audio/player_voice_manager.hpp"
+#include "audio/spell_sound_manager.hpp"
+#include "audio/ui_sound_manager.hpp"
 #include "game/zone_manager.hpp"
 #include "pipeline/asset_manager.hpp"
+#include <chrono>
+#include <cstdint>
 #include <glm/glm.hpp>
+#include <memory>
+#include <random>
+#include <shared_mutex>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace wowee::audio {
 
 // --- ActivitySoundManager ---
-bool ActivitySoundManager::initialize(pipeline::AssetManager*) { return true; }
+bool ActivitySoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void ActivitySoundManager::shutdown() {}
-void ActivitySoundManager::update(float) {}
+void ActivitySoundManager::update(float deltaTime) {}
 void ActivitySoundManager::playJump() {}
-void ActivitySoundManager::playLanding(FootstepSurface, bool) {}
-void ActivitySoundManager::setSwimmingState(bool, bool) {}
-void ActivitySoundManager::setCharacterVoiceProfile(const std::string&) {}
-void ActivitySoundManager::setCharacterVoiceProfile(const std::string&, const std::string&, bool) {}
+void ActivitySoundManager::playLanding(FootstepSurface surface, bool hardLanding) {}
+void ActivitySoundManager::setSwimmingState(bool swimming, bool moving) {}
+void ActivitySoundManager::setCharacterVoiceProfile(const std::string& modelName) {}
+void ActivitySoundManager::setCharacterVoiceProfile(const std::string& raceFolder, const std::string& raceBase, bool male) {}
 void ActivitySoundManager::playWaterEnter() {}
 void ActivitySoundManager::playWaterExit() {}
 void ActivitySoundManager::playMeleeSwing() {}
 void ActivitySoundManager::playAttackGrunt() {}
-void ActivitySoundManager::playWound(bool) {}
+void ActivitySoundManager::playWound(bool isCrit) {}
 void ActivitySoundManager::playDeath() {}
-
-// --- MusicManager ---
-bool MusicManager::initialize(pipeline::AssetManager*) { return true; }
-void MusicManager::shutdown() {}
-void MusicManager::stopMusic(float) {}
-void MusicManager::crossfadeTo(const std::string&, float) {}
-void MusicManager::crossfadeToFile(const std::string&, float) {}
-void MusicManager::update(float) {}
-void MusicManager::setVolume(int) {}
-void MusicManager::setUnderwaterMode(bool) {}
-void MusicManager::preloadMusic(const std::string&) {}
-
+void ActivitySoundManager::preloadCandidates(std::vector<Sample>& out, const std::vector<std::string>& candidates) {}
+void ActivitySoundManager::preloadLandingSet(FootstepSurface surface, const std::string& material) {}
+void ActivitySoundManager::rebuildJumpClipsForProfile(const std::string& raceFolder, const std::string& raceBase, bool male) {}
+void ActivitySoundManager::rebuildSwimLoopClipsForProfile(const std::string& raceFolder, const std::string& raceBase, bool male) {}
+void ActivitySoundManager::rebuildHardLandClipsForProfile(const std::string& raceFolder, const std::string& raceBase, bool male) {}
+void ActivitySoundManager::rebuildCombatVocalClipsForProfile(const std::string& raceFolder, const std::string& raceBase, bool male) {}
+bool ActivitySoundManager::playSplash(const std::vector<Sample>& clips) { return false; }
+void ActivitySoundManager::startSwimLoop() {}
+void ActivitySoundManager::stopSwimLoop() {}
+void ActivitySoundManager::stopOneShot() {}
+void ActivitySoundManager::reapProcesses() {}
+// --- AmbientSoundManager ---
+bool AmbientSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
+void AmbientSoundManager::shutdown() {}
+void AmbientSoundManager::update(float deltaTime, const glm::vec3& cameraPos, bool isIndoor, bool isSwimming, bool isBlacksmith) {}
+void AmbientSoundManager::setWeather(WeatherType type) {}
+void AmbientSoundManager::setZoneType(ZoneType type) {}
+void AmbientSoundManager::setZoneId(uint32_t zoneId) {}
+void AmbientSoundManager::setCityType(CityType type) {}
+uint64_t AmbientSoundManager::addEmitter(const glm::vec3& position, AmbientType type) { return 0; }
+void AmbientSoundManager::removeEmitter(uint64_t id) {}
+void AmbientSoundManager::clearEmitters() {}
+void AmbientSoundManager::setGameTime(float hours) {}
+void AmbientSoundManager::setVolumeScale(float scale) {}
+void AmbientSoundManager::updatePositionalEmitters(float deltaTime, const glm::vec3& cameraPos) {}
+void AmbientSoundManager::updatePeriodicSounds(float deltaTime, bool isIndoor, bool isSwimming) {}
+void AmbientSoundManager::updateWindAmbience(float deltaTime, bool isIndoor) {}
+void AmbientSoundManager::updateBlacksmithAmbience(float deltaTime) {}
+void AmbientSoundManager::updateWeatherAmbience(float deltaTime, bool isIndoor) {}
+void AmbientSoundManager::updateWaterAmbience(float deltaTime, bool isSwimming) {}
+void AmbientSoundManager::updateZoneAmbience(float deltaTime, bool isIndoor) {}
+void AmbientSoundManager::updateCityAmbience(float deltaTime) {}
+void AmbientSoundManager::updateBellTolls(float deltaTime) {}
+bool AmbientSoundManager::loadSound(const std::string& path, AmbientSample& sample, pipeline::AssetManager* assets) { return false; }
 // --- AudioCoordinator ---
-bool AudioCoordinator::initialize() { return true; }
-void AudioCoordinator::initializeWithAssets(pipeline::AssetManager*) {}
+bool AudioCoordinator::initialize() { return false; }
+void AudioCoordinator::initializeWithAssets(pipeline::AssetManager* assetManager) {}
 void AudioCoordinator::shutdown() {}
-void AudioCoordinator::updateZoneAudio(const ZoneAudioContext&) {}
-void AudioCoordinator::playZoneMusic(const std::string&) {}
-void AudioCoordinator::onOriginalSoundtrackDisabled(game::ZoneManager*) {}
-
+void AudioCoordinator::updateZoneAudio(const ZoneAudioContext& ctx) {}
+void AudioCoordinator::onOriginalSoundtrackDisabled(game::ZoneManager* zm) {}
+void AudioCoordinator::playZoneMusic(const std::string& music) {}
+// --- AudioEngine ---
+bool AudioEngine::initialize() { return false; }
+void AudioEngine::shutdown() {}
+void AudioEngine::setMasterVolume(float volume) {}
+void AudioEngine::setListenerPosition(const glm::vec3& position) {}
+void AudioEngine::setListenerOrientation(const glm::vec3& forward, const glm::vec3& up) {}
+bool AudioEngine::playSound2D(const std::vector<uint8_t>& wavData, float volume, float pitch) { return false; }
+bool AudioEngine::playSound2D(const std::string& mpqPath, float volume, float pitch) { return false; }
+uint32_t AudioEngine::playSound2DStoppable(const std::vector<uint8_t>& wavData, float volume) { return 0; }
+void AudioEngine::stopSound(uint32_t id) {}
+bool AudioEngine::playSound3D(const std::vector<uint8_t>& wavData, const glm::vec3& position, float volume, float pitch, float maxDistance) { return false; }
+bool AudioEngine::playSound3D(const std::string& mpqPath, const glm::vec3& position, float volume, float pitch, float maxDistance) { return false; }
+bool AudioEngine::playMusic(std::shared_ptr<const std::vector<uint8_t>> musicData, float volume, bool loop) { return false; }
+void AudioEngine::stopMusic() {}
+bool AudioEngine::isMusicPlaying() const { return false; }
+void AudioEngine::setMusicVolume(float volume) {}
+void AudioEngine::update(float deltaTime) {}
+// --- CombatSoundManager ---
+bool CombatSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
+void CombatSoundManager::shutdown() {}
+void CombatSoundManager::setVolumeScale(float scale) {}
+void CombatSoundManager::playWeaponSwing(WeaponSize size, bool isCrit) {}
+void CombatSoundManager::playWeaponMiss(bool twoHanded) {}
+void CombatSoundManager::playImpact(WeaponSize weaponSize, ImpactType impactType, bool isCrit) {}
+void CombatSoundManager::playClap() {}
+void CombatSoundManager::playPlayerAttackGrunt(PlayerRace race) {}
+void CombatSoundManager::playPlayerWound(PlayerRace race, bool isCrit) {}
+void CombatSoundManager::playPlayerDeath(PlayerRace race) {}
+bool CombatSoundManager::loadSound(const std::string& path, CombatSample& sample, pipeline::AssetManager* assets) { return false; }
+void CombatSoundManager::playSound(const std::vector<CombatSample>& library, float volumeMultiplier) {}
+void CombatSoundManager::playRandomSound(const std::vector<CombatSample>& library, float volumeMultiplier) {}
+// --- FootstepManager ---
+bool FootstepManager::initialize(pipeline::AssetManager* assets) { return false; }
+void FootstepManager::shutdown() {}
+void FootstepManager::update(float deltaTime) {}
+void FootstepManager::playFootstep(FootstepSurface surface, bool sprinting) {}
+void FootstepManager::playMountFootstep(FootstepSurface surface, FootstepBank bank) {}
+void FootstepManager::preloadSurface(SurfaceSamples* bank, FootstepSurface surface, const std::vector<std::string>& candidates, const char* bankName) {}
+bool FootstepManager::playRandomStep(FootstepSurface surface, FootstepBank bank, float minInterval, float volumeMul) { return false; }
+static const char* FootstepManager::surfaceName(FootstepSurface surface) { return nullptr; }
+// --- MountSoundManager ---
+bool MountSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
+void MountSoundManager::shutdown() {}
+void MountSoundManager::update(float deltaTime) {}
+void MountSoundManager::onMount(uint32_t creatureDisplayId, bool isFlying, const std::string& modelPath) {}
+void MountSoundManager::onDismount() {}
+void MountSoundManager::setMoving(bool moving) {}
+void MountSoundManager::setFlying(bool flying) {}
+void MountSoundManager::setGrounded(bool grounded) {}
+void MountSoundManager::playRearUpSound() {}
+void MountSoundManager::playJumpSound() {}
+void MountSoundManager::playLandSound() {}
+void MountSoundManager::playIdleSound() {}
+MountType MountSoundManager::detectMountType(uint32_t creatureDisplayId) const { return {}; }
+MountFamily MountSoundManager::detectMountFamily(uint32_t creatureDisplayId) const { return {}; }
+MountFamily MountSoundManager::detectMountFamilyFromPath(const std::string& modelPath) const { return {}; }
+void MountSoundManager::updateMountSounds() {}
+void MountSoundManager::stopAllMountSounds() {}
+void MountSoundManager::loadMountSounds() {}
+bool MountSoundManager::loadSound(const std::string& path, MountSample& sample) { return false; }
+const FamilySounds& MountSoundManager::getCurrentFamilySounds() const { return {}; }
+// --- MovementSoundManager ---
+bool MovementSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
+void MovementSoundManager::shutdown() {}
+void MovementSoundManager::setVolumeScale(float scale) {}
+void MovementSoundManager::playEnterWater(CharacterSize size) {}
+void MovementSoundManager::playWaterFootstep(CharacterSize size) {}
+void MovementSoundManager::playJump(PlayerRace race) {}
+void MovementSoundManager::playLand(PlayerRace race) {}
+bool MovementSoundManager::loadSound(const std::string& path, MovementSample& sample, pipeline::AssetManager* assets) { return false; }
+void MovementSoundManager::playSound(const std::vector<MovementSample>& library, float volumeMultiplier) {}
+void MovementSoundManager::playRandomSound(const std::vector<MovementSample>& library, float volumeMultiplier) {}
+// --- MusicManager ---
+bool MusicManager::initialize(pipeline::AssetManager* assets) { return false; }
+void MusicManager::shutdown() {}
+void MusicManager::stopMusic(float fadeMs) {}
+void MusicManager::crossfadeTo(const std::string& mpqPath, float fadeMs) {}
+void MusicManager::crossfadeToFile(const std::string& filePath, float fadeMs) {}
+void MusicManager::update(float deltaTime) {}
+void MusicManager::setVolume(int volume) {}
+void MusicManager::setUnderwaterMode(bool underwater) {}
+void MusicManager::preloadMusic(const std::string& mpqPath) {}
+float MusicManager::effectiveMusicVolume() const { return 0.0f; }
+void MusicManager::cancelPendingFileLoad() {}
+void MusicManager::pollPendingFileLoad() {}
+// --- NpcVoiceManager ---
+bool NpcVoiceManager::initialize(pipeline::AssetManager* assets) { return false; }
+void NpcVoiceManager::shutdown() {}
+void NpcVoiceManager::playGreeting(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::playFarewell(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::playVendor(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::playPissed(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::playAggro(uint64_t npcGuid, uint32_t displayId, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::playCombatAttack(uint64_t npcGuid, uint32_t displayId, const glm::vec3& position) {}
+void NpcVoiceManager::playFlee(uint64_t npcGuid, VoiceType voiceType, const glm::vec3& position) {}
+void NpcVoiceManager::loadVoiceSounds() {}
+void NpcVoiceManager::loadCreatureAggroSounds() {}
+bool NpcVoiceManager::loadSound(const std::string& path, VoiceSample& sample) { return false; }
+bool NpcVoiceManager::playSoundEntry(uint32_t soundId, const glm::vec3& position) { return false; }
+void NpcVoiceManager::playSound(uint64_t npcGuid, VoiceType voiceType, SoundCategory category, const glm::vec3& position) {}
+// --- PlayerVoiceManager ---
+bool PlayerVoiceManager::initialize(pipeline::AssetManager* assets) { return false; }
+void PlayerVoiceManager::shutdown() {}
+void PlayerVoiceManager::setVolumeScale(float scale) {}
+void PlayerVoiceManager::playError(PlayerErrorSpeech type, uint8_t raceId, uint8_t gender) {}
+void PlayerVoiceManager::ensureLibrary(uint8_t raceId, uint8_t gender) {}
+// --- SpellSoundManager ---
+bool SpellSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
+void SpellSoundManager::shutdown() {}
+void SpellSoundManager::setVolumeScale(float scale) {}
+void SpellSoundManager::playPrecast(MagicSchool school, SpellPower power) {}
+void SpellSoundManager::stopPrecast() {}
+void SpellSoundManager::playCast(MagicSchool school) {}
+void SpellSoundManager::playImpact(MagicSchool school, SpellPower power) {}
+void SpellSoundManager::playFireball() {}
+void SpellSoundManager::playFrostbolt() {}
+void SpellSoundManager::playLightningBolt() {}
+void SpellSoundManager::playHeal() {}
+void SpellSoundManager::playShadowBolt() {}
+bool SpellSoundManager::loadSound(const std::string& path, SpellSample& sample, pipeline::AssetManager* assets) { return false; }
+void SpellSoundManager::playSound(const std::vector<SpellSample>& library, float volumeMultiplier) {}
+void SpellSoundManager::playRandomSound(const std::vector<SpellSample>& library, float volumeMultiplier) {}
 // --- UiSoundManager ---
-bool UiSoundManager::initialize(pipeline::AssetManager*) { return true; }
+bool UiSoundManager::initialize(pipeline::AssetManager* assets) { return false; }
 void UiSoundManager::shutdown() {}
-void UiSoundManager::setVolumeScale(float) {}
+void UiSoundManager::setVolumeScale(float scale) {}
 void UiSoundManager::playBagOpen() {}
 void UiSoundManager::playBagClose() {}
 void UiSoundManager::playQuestLogOpen() {}
 void UiSoundManager::playQuestLogClose() {}
 void UiSoundManager::playCharacterSheetOpen() {}
 void UiSoundManager::playCharacterSheetClose() {}
+void UiSoundManager::playAuctionHouseOpen() {}
+void UiSoundManager::playAuctionHouseClose() {}
+void UiSoundManager::playGuildBankOpen() {}
+void UiSoundManager::playGuildBankClose() {}
 void UiSoundManager::playButtonClick() {}
 void UiSoundManager::playMenuButtonClick() {}
 void UiSoundManager::playQuestActivate() {}
 void UiSoundManager::playQuestComplete() {}
+void UiSoundManager::playQuestFailed() {}
+void UiSoundManager::playQuestUpdate() {}
+void UiSoundManager::playFishingBite() {}
+void UiSoundManager::playLootCoinSmall() {}
+void UiSoundManager::playLootCoinLarge() {}
+void UiSoundManager::playLootItem() {}
+void UiSoundManager::playDropOnGround() {}
+void UiSoundManager::playPickupBag() {}
+void UiSoundManager::playPickupBook() {}
+void UiSoundManager::playPickupCloth() {}
+void UiSoundManager::playPickupFood() {}
+void UiSoundManager::playPickupGem() {}
+void UiSoundManager::playEating() {}
+void UiSoundManager::playDrinking() {}
+void UiSoundManager::playLevelUp() {}
+void UiSoundManager::playAchievementAlert() {}
 void UiSoundManager::playError() {}
+void UiSoundManager::playTargetSelect() {}
+void UiSoundManager::playTargetDeselect() {}
+void UiSoundManager::playWhisperReceived() {}
+void UiSoundManager::playMailReceived() {}
+void UiSoundManager::playMinimapPing() {}
+bool UiSoundManager::loadSound(const std::string& path, UISample& sample, pipeline::AssetManager* assets) { return false; }
+void UiSoundManager::playSound(const std::vector<UISample>& library) {}
 
-// --- SpellSoundManager ---
-bool SpellSoundManager::initialize(pipeline::AssetManager*) { return true; }
-void SpellSoundManager::shutdown() {}
-void SpellSoundManager::setVolumeScale(float) {}
-void SpellSoundManager::playFireball() {}
-void SpellSoundManager::playFrostbolt() {}
-void SpellSoundManager::playLightningBolt() {}
-void SpellSoundManager::playHeal() {}
-void SpellSoundManager::playShadowBolt() {}
-
-// --- NpcVoiceManager ---
-bool NpcVoiceManager::initialize(pipeline::AssetManager*) { return true; }
-void NpcVoiceManager::shutdown() {}
-void NpcVoiceManager::playGreeting(uint64_t, VoiceType, const glm::vec3&) {}
-void NpcVoiceManager::playFarewell(uint64_t, VoiceType, const glm::vec3&) {}
-void NpcVoiceManager::playVendor(uint64_t, VoiceType, const glm::vec3&) {}
-void NpcVoiceManager::playPissed(uint64_t, VoiceType, const glm::vec3&) {}
-void NpcVoiceManager::playFlee(uint64_t, VoiceType, const glm::vec3&) {}
-
-// --- FootstepManager ---
-bool FootstepManager::initialize(pipeline::AssetManager*) { return true; }
-void FootstepManager::shutdown() {}
-void FootstepManager::update(float) {}
-void FootstepManager::playFootstep(FootstepSurface, bool) {}
-
-// --- AmbientSoundManager ---
-bool AmbientSoundManager::initialize(pipeline::AssetManager*) { return true; }
-void AmbientSoundManager::shutdown() {}
-void AmbientSoundManager::update(float, const glm::vec3&, bool, bool, bool) {}
-void AmbientSoundManager::setWeather(WeatherType) {}
-void AmbientSoundManager::setZoneType(ZoneType) {}
-void AmbientSoundManager::setZoneId(uint32_t) {}
-void AmbientSoundManager::setCityType(CityType) {}
-void AmbientSoundManager::setVolumeScale(float) {}
-
-// --- CombatSoundManager ---
-bool CombatSoundManager::initialize(pipeline::AssetManager*) { return true; }
-void CombatSoundManager::shutdown() {}
-void CombatSoundManager::setVolumeScale(float) {}
-
-// --- MovementSoundManager ---
-bool MovementSoundManager::initialize(pipeline::AssetManager*) { return true; }
-void MovementSoundManager::shutdown() {}
-void MovementSoundManager::setVolumeScale(float) {}
+// --- AudioEngine singleton ---
+AudioEngine& AudioEngine::instance() {
+    static AudioEngine inst;
+    return inst;
+}
 
 } // namespace wowee::audio
