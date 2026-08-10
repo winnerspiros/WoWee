@@ -141,6 +141,8 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
+        export CPLUS_INCLUDE_PATH=/usr/include:$CPLUS_INCLUDE_PATH
+        export C_INCLUDE_PATH=/usr/include:$C_INCLUDE_PATH
         set -o pipefail
         ./gradlew assembleDebug --stacktrace 2>&1
         echo "--- Searching for APK ---"
@@ -157,6 +159,8 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
+        export CPLUS_INCLUDE_PATH=/usr/include:$CPLUS_INCLUDE_PATH
+        export C_INCLUDE_PATH=/usr/include:$C_INCLUDE_PATH
         set -o pipefail
         ./gradlew assembleRelease --stacktrace 2>&1
         echo "--- Searching for APK ---"
