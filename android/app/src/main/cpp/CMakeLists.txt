@@ -56,17 +56,12 @@ add_subdirectory(${SDL_DIR} ${CMAKE_BINARY_DIR}/SDL2)
 # --- Find Vulkan (Android NDK provides Vulkan headers + loader) ---
 find_package(Vulkan REQUIRED)
 
-# --- OpenSSL for Android ---
-# NDK doesn't ship OpenSSL headers. Use host system headers (libssl-dev).
-# Architecture-independent C headers — safe for cross-compile.
-if(NOT OPENSSL_FOUND)
-    find_library(SSL_LIB ssl)
-    find_library(CRYPTO_LIB crypto)
-    set(OPENSSL_INCLUDE_DIR /usr/include)
-    set(OPENSSL_SSL_LIBRARY ${SSL_LIB})
-    set(OPENSSL_CRYPTO_LIBRARY ${CRYPTO_LIB})
-    message(STATUS "OpenSSL: host headers + NDK libs")
-endif()
+# --- OpenSSL stubbed on Android ---
+# NDK r27+ doesn't ship BoringSSL headers and host headers are sandboxed.
+# Auth/SRP code is excluded — the app won't connect to servers yet.
+# TODO: download prebuilt OpenSSL for Android to enable auth.
+add_compile_definitions(WOWEE_NO_OPENSSL=1)
+set(WOWEE_OPENSSL_STUBBED TRUE)
 
 # --- GLM (header-only) ---
 set(GLM_DIR ${WOWEE_EXTERN}/glm)
@@ -182,16 +177,20 @@ set(WOWEE_WORLD_SOURCES
     ${WOWEE_SRC}/network/world_socket.cpp
 
     # Auth
-    ${WOWEE_SRC}/auth/auth_handler.cpp
     ${WOWEE_SRC}/auth/auth_opcodes.cpp
     ${WOWEE_SRC}/auth/auth_packets.cpp
     ${WOWEE_SRC}/auth/pin_auth.cpp
     ${WOWEE_SRC}/auth/integrity.cpp
-    ${WOWEE_SRC}/auth/srp.cpp
-    ${WOWEE_SRC}/auth/big_num.cpp
-    ${WOWEE_SRC}/auth/crypto.cpp
     ${WOWEE_SRC}/auth/rc4.cpp
     ${WOWEE_SRC}/auth/vanilla_crypt.cpp
+
+    # OpenSSL-dependent (excluded until prebuilt libs available)
+    if(NOT WOWEE_OPENSSL_STUBBED)
+        ${WOWEE_SRC}/auth/auth_handler.cpp
+        ${WOWEE_SRC}/auth/srp.cpp
+        ${WOWEE_SRC}/auth/big_num.cpp
+        ${WOWEE_SRC}/auth/crypto.cpp
+    endif()
 
     # Game
     ${WOWEE_SRC}/game/expansion_profile.cpp
@@ -576,10 +575,6 @@ target_include_directories(wowee SYSTEM PRIVATE
     ${VK_BOOTSTRAP_DIR}/src
 )
 
-# OpenSSL: use host system headers (NDK doesn't ship them)
-# Use raw -I because NDK toolchain strips system include paths
-target_compile_options(wowee PRIVATE -isystem/usr/include)
-
 # Link libraries
 target_link_libraries(wowee PRIVATE
     SDL2-static
@@ -592,14 +587,9 @@ target_link_libraries(wowee PRIVATE
     ${CMAKE_DL_LIBS}
     android
     log
+    ssl
+    crypto
 )
-
-# Link OpenSSL
-if(OPENSSL_SSL_LIBRARY AND OPENSSL_CRYPTO_LIBRARY)
-    target_link_libraries(wowee PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-else()
-    target_link_libraries(wowee PRIVATE ssl crypto)
-endif()
 
 # Link GLM (header-only)
 if(glm_FOUND)

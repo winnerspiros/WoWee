@@ -110,8 +110,7 @@ jobs:
     - name: Install Gradle (for wrapper generation)
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -y -qq gradle libssl-dev
-        dpkg -L libssl-dev | grep 'openssl/ssl.h' | head -1
+        sudo apt-get install -y -qq gradle
         gradle --version | head -1
 
     - name: Generate Gradle wrapper
@@ -141,8 +140,6 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
-        export CPLUS_INCLUDE_PATH=/usr/include:$CPLUS_INCLUDE_PATH
-        export C_INCLUDE_PATH=/usr/include:$C_INCLUDE_PATH
         set -o pipefail
         ./gradlew assembleDebug --stacktrace 2>&1
         echo "--- Searching for APK ---"
@@ -159,8 +156,6 @@ jobs:
       working-directory: android
       run: |
         export ANDROID_HOME=$ANDROID_HOME
-        export CPLUS_INCLUDE_PATH=/usr/include:$CPLUS_INCLUDE_PATH
-        export C_INCLUDE_PATH=/usr/include:$C_INCLUDE_PATH
         set -o pipefail
         ./gradlew assembleRelease --stacktrace 2>&1
         echo "--- Searching for APK ---"
