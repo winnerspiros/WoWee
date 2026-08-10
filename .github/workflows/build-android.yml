@@ -49,7 +49,8 @@ jobs:
         # but SDL2's source tree has headers at include/SDL.h (no SDL2 prefix).
         # This symlink makes both resolve: extern/SDL/include/SDL2/SDL.h → SDL.h
         ln -sf . extern/SDL/include/SDL2
-        echo "SDL2 Java sources installed"
+        cat android/app/sdl_android_patch.c >> extern/SDL/src/core/android/SDL_android.c
+        echo "SDL2 Android source patched"
 
     - name: Download GLM headers (header-only, not in NDK)
       run: |
