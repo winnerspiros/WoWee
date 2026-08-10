@@ -58,7 +58,7 @@ jobs:
         curl -sSL "$GLM_URL" -o /tmp/glm.tar.gz
         mkdir -p extern/glm
         tar xzf /tmp/glm.tar.gz -C extern/glm --strip-components=1
-        echo "GLM $(grep -oP 'version \K[0-9.]+' extern/glm/CMakeLists.txt | head -1) installed"
+        echo "GLM installed"
 
     - name: Set up JDK 17
       uses: actions/setup-java@v5
