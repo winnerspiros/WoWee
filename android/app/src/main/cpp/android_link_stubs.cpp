@@ -3,6 +3,10 @@
 #include "audio/ui_sound_manager.hpp"
 #include "audio/spell_sound_manager.hpp"
 #include "audio/music_manager.hpp"
+#include "audio/audio_coordinator.hpp"
+#include "audio/ambient_sound_manager.hpp"
+#include "audio/combat_sound_manager.hpp"
+#include "audio/audio_engine.hpp"
 
 namespace wowee {
 
@@ -25,8 +29,19 @@ namespace audio {
     void SpellSoundManager::playCast(MagicSchool) {}
     void SpellSoundManager::playImpact(MagicSchool, SpellPower) {}
     void MusicManager::stopMusic(float) {}
+    void MusicManager::setVolume(int) {}
     void UiSoundManager::playLevelUp() {}
+    void UiSoundManager::playAchievementAlert() {}
+    void UiSoundManager::setVolumeScale(float) {}
+    void AmbientSoundManager::setVolumeScale(float) {}
+    void CombatSoundManager::setVolumeScale(float) {}
+    void AudioCoordinator::onOriginalSoundtrackDisabled(wowee::game::ZoneManager*) {}
 }  // namespace audio
+
+// --- config stubs (config_paths.cpp excluded on Android) ---
+namespace core {
+    std::string getConfigRoot() { return ""; }
+}  // namespace core
 
 // --- SDL2 joystick stubs (not compiled in SDL2-static) ---
 extern "C" {
